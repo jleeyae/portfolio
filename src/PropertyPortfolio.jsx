@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useState } from 'react';
+import { Download, Home, TrendingUp, Heart, MapPin, DollarSign, Bed, Bath, Maximize } from 'lucide-react';
 
 const PropertyPortfolio = () => {
   const [selectedGroup, setSelectedGroup] = useState(null)
