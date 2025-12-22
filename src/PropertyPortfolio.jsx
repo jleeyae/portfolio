@@ -351,7 +351,7 @@ const PropertyPortfolio = () => {
   const renderHearts = (count) => Array(count).fill("❤️").join("");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-8">
       <style>
         {`
           @media print {
@@ -363,7 +363,7 @@ const PropertyPortfolio = () => {
         `}
       </style>
 
-      <div className="max-w-5xl mx-auto print-content">
+      <div className="max-w-5xl w-full mx-auto print-content">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-indigo-100">
           <div className="flex items-center justify-between mb-6">
