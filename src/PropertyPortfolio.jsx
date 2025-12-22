@@ -92,15 +92,263 @@ const PropertyPortfolio = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   const groups = [
-    // === your full groups array exactly as before, unchanged ===
-    // (Spicewood/Boerne, Austin, Silverthorne, Breckenridge, etc.)
+    {
+      id: 1,
+      name: "Spicewood/Boerne Area, TX",
+      region: "Hill Country",
+      hearts: 4,
+      totalValue: "$12,049,000",
+      monthlyIncome: "$25,500-$35,500",
+      annualIncome: "$306,000-$426,000",
+      datingScene:
+        "EXCEPTIONAL - Best combined dating pool due to Austin proximity + Hill Country exclusivity + water lifestyle",
+      bestFor:
+        "Active, affluent couples and families; wine enthusiasts; water sports families",
+      properties: [
+        {
+          address: "19813 & 19817 Lakehurst Loop, Spicewood, TX 78669",
+          price: "$6,550,000",
+          beds: 4,
+          baths: 4,
+          sqft: "4,000",
+          monthly: "$12,000-$16,000",
+          annual: "$144,000-$192,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/19813-Lakehurst-Loop-Spicewood-TX-78669/"
+        },
+        {
+          address: "3507 Bee Creek Rd, Spicewood, TX 78669",
+          price: "$1,299,000",
+          beds: 3,
+          baths: 3,
+          sqft: "3,777",
+          monthly: "$4,500-$6,500",
+          annual: "$54,000-$78,000",
+          url: "https://www.zillow.com/homedetails/3507-Bee-Creek-Rd-Spicewood-TX-78669/"
+        },
+        {
+          address: "74 Swede Springs, Boerne, TX 78006",
+          price: "$4,200,000",
+          beds: 8,
+          baths: 8,
+          sqft: "8,186",
+          monthly: "$9,000-$13,000",
+          annual: "$108,000-$156,000",
+          url: "https://www.zillow.com/homedetails/74-Swede-Springs-Boerne-TX-78006/"
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: "Austin Area, TX",
+      region: "Tech Hub",
+      hearts: 3,
+      totalValue: "$6,750,000",
+      monthlyIncome: "$15,000-$20,000",
+      annualIncome: "$180,000-$240,000",
+      datingScene:
+        "EXCELLENT - Direct access to Austin's tech millionaire boom",
+      bestFor:
+        "Tech professionals, entrepreneurs, creative types, young ambitious couples",
+      properties: [
+        {
+          address: "3806 Spirit Lake Cv, Austin, TX 78746",
+          price: "$6,750,000",
+          beds: 7,
+          baths: 10,
+          sqft: "9,275",
+          monthly: "$15,000-$20,000",
+          annual: "$180,000-$240,000",
+          url: "https://www.zillow.com/homedetails/3806-Spirit-Lake-Cv-Austin-TX-78746/"
+        }
+      ]
+    },
+    {
+      id: 3,
+      name: "Silverthorne/Summit County, CO",
+      region: "Mountain Resort",
+      hearts: 2,
+      totalValue: "$28,095,000",
+      monthlyIncome: "$37,000-$51,000",
+      annualIncome: "$444,000-$612,000",
+      datingScene:
+        "GOOD - Quality outdoor enthusiasts; less crowded dating market",
+      bestFor:
+        "Outdoor-focused couples, remote workers, adventure seekers, ultra-affluent families",
+      properties: [
+        {
+          address: "2244 Johnson Rd, Silverthorne, CO 80498",
+          price: "$3,595,000",
+          beds: 5,
+          baths: 5,
+          sqft: "6,346",
+          monthly: "$12,000-$16,000",
+          annual: "$144,000-$192,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/2244-Johnson-Rd-Silverthorne-CO-80498/"
+        },
+        {
+          address: "1800 Triple Creek Ranch Rd, Silverthorne, CO 80498",
+          price: "$24,500,000",
+          beds: 6,
+          baths: 7,
+          sqft: "7,284",
+          monthly: "$25,000-$35,000",
+          annual: "$300,000-$420,000",
+          url: "https://www.zillow.com/homedetails/1800-Triple-Creek-Ranch-Rd-Silverthorne-CO-80498/"
+        }
+      ]
+    },
+    {
+      id: 4,
+      name: "Breckenridge, CO",
+      region: "Summit County",
+      hearts: 3,
+      totalValue: "$21,494,999",
+      monthlyIncome: "$43,000-$63,000",
+      annualIncome: "$516,000-$756,000",
+      datingScene:
+        "EXCEPTIONAL - Highest dating opportunity concentration in any non-Texas market",
+      bestFor:
+        "Ski-focused couples, active professionals, entertaining-focused individuals",
+      properties: [
+        {
+          address: "320 Headlight Dr, Breckenridge, CO 80424",
+          price: "$6,995,000",
+          beds: 6,
+          baths: 6,
+          sqft: "6,552",
+          monthly: "$18,000-$28,000",
+          annual: "$216,000-$336,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/320-Headlight-Dr-Breckenridge-CO-80424/"
+        },
+        {
+          address: "250 Sallie Barber Rd, Breckenridge, CO 80424",
+          price: "$14,499,999",
+          beds: 6,
+          baths: 9,
+          sqft: "7,444",
+          monthly: "$25,000-$35,000",
+          annual: "$300,000-$420,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/250-Sallie-Barber-Rd-Breckenridge-CO-80424/"
+        }
+      ]
+    },
+    {
+      id: 7,
+      name: "Loveland/Fort Collins Area, CO",
+      region: "Northern Colorado",
+      hearts: 3,
+      totalValue: "$10,750,000",
+      monthlyIncome: "$21,000-$29,000",
+      annualIncome: "$252,000-$348,000",
+      datingScene:
+        "EXCELLENT - BEST ESTABLISHED SINGLES CITY IN COLORADO (Fort Collins #1 ranked)",
+      bestFor:
+        "Young professionals, relocating families, wine enthusiasts, remote workers",
+      properties: [
+        {
+          address: "0 Soaring Eagle Pass, Loveland, CO 80538",
+          price: "$2,400,000",
+          beds: 4,
+          baths: 5,
+          sqft: "5,940",
+          monthly: "$6,000-$8,500",
+          annual: "$72,000-$102,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/0-Soaring-Eagle-Pass-Loveland-CO-80538/"
+        },
+        {
+          address: "23930 N Highway 287, Livermore, CO 80536",
+          price: "$4,500,000",
+          beds: 5,
+          baths: 5,
+          sqft: "5,500",
+          monthly: "$7,000-$9,500",
+          annual: "$84,000-$114,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/23930-N-Highway-287-Livermore-CO-80536/"
+        },
+        {
+          address: "796 Abrams Way, Loveland, CO 80537",
+          price: "$3,850,000",
+          beds: 5,
+          baths: 5,
+          sqft: "6,655",
+          monthly: "$8,000-$11,000",
+          annual: "$96,000-$132,000",
+          url: "https://www.zillow.com/homedetails/796-Abrams-Way-Loveland-CO-80537/"
+        }
+      ]
+    },
+    {
+      id: 6,
+      name: "Denver Metro - North/Northeast",
+      region: "Denver Area",
+      hearts: 2,
+      totalValue: "$8,850,000",
+      monthlyIncome: "$28,000-$35,000",
+      annualIncome: "$336,000-$420,000",
+      datingScene: "GOOD - Urban professional singles market",
+      bestFor: "Corporate executives, business leaders, tech professionals",
+      properties: [
+        {
+          address: "12565 Picadilly Road, Commerce City, CO 80022",
+          price: "$8,850,000",
+          beds: 6,
+          baths: 13,
+          sqft: "16,269",
+          monthly: "$28,000-$35,000",
+          annual: "$336,000-$420,000",
+          jason: true,
+          url: "https://www.zillow.com/homedetails/12565-Picadilly-Road-Commerce-City-CO-80022/"
+        }
+      ]
+    },
+    {
+      id: 11,
+      name: "Denver Metro - West/Southwest",
+      region: "Foothills",
+      hearts: 2,
+      totalValue: "$47,598,000",
+      monthlyIncome: "$94,000-$128,000",
+      annualIncome: "$1,128,000-$1,536,000",
+      datingScene:
+        "GOOD TO EXCELLENT - Boulder ultra-wealthy market, established upscale communities",
+      bestFor:
+        "Ultra-affluent individuals, mountain lifestyle couples, outdoor recreation professionals",
+      properties: [
+        {
+          address: "6686 Jay Rd, Boulder, CO 80301",
+          price: "$19,500,000",
+          beds: 4,
+          baths: 4,
+          sqft: "7,832",
+          monthly: "$22,000-$30,000",
+          annual: "$264,000-$360,000",
+          url: "https://www.zillow.com/homedetails/6686-Jay-Rd-Boulder-CO-80301/"
+        },
+        {
+          address: "26271 Richmond Hill Road, Conifer, CO 80433",
+          price: "$5,999,000",
+          beds: 5,
+          baths: 6,
+          sqft: "7,706",
+          monthly: "$14,000-$19,000",
+          annual: "$168,000-$228,000",
+          url: "https://www.zillow.com/homedetails/26271-Richmond-Hill-Road-Conifer-CO-80433/"
+        }
+      ]
+    }
   ];
 
   const handleDownloadPDF = () => {
     window.print();
   };
 
-  const renderHearts = (count) => Array(count).fill('❤️').join('');
+  const renderHearts = (count) => Array(count).fill("❤️").join("");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-8">
@@ -170,14 +418,13 @@ const PropertyPortfolio = () => {
           </div>
         </div>
 
-        {/* Property Groups: collapsed header + dropdown body */}
+        {/* Property Groups */}
         <div className="space-y-6">
           {groups.map((group) => (
             <div
               key={group.id}
               className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200"
             >
-              {/* Clickable purple bar */}
               <button
                 type="button"
                 className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-5 cursor-pointer hover:from-indigo-600 hover:to-purple-700 transition-all flex items-center justify-between text-left"
@@ -209,10 +456,8 @@ const PropertyPortfolio = () => {
                 </div>
               </button>
 
-              {/* Dropdown body */}
               {selectedGroup === group.id && (
                 <div className="p-6 space-y-6 bg-slate-50">
-                  {/* Group stats */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-white rounded-xl p-4 border border-gray-100">
                       <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
@@ -232,7 +477,6 @@ const PropertyPortfolio = () => {
                     </div>
                   </div>
 
-                  {/* Dating scene */}
                   <div className="bg-pink-50 border border-pink-200 rounded-xl p-4">
                     <p className="text-sm font-semibold text-pink-800 mb-2 flex items-center gap-2">
                       <HeartIcon className="text-pink-600" size={18} />
@@ -241,7 +485,6 @@ const PropertyPortfolio = () => {
                     <p className="text-pink-900 text-sm">{group.datingScene}</p>
                   </div>
 
-                  {/* Best for */}
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                     <p className="text-sm font-semibold text-blue-800 mb-2">
                       Best For
@@ -249,7 +492,6 @@ const PropertyPortfolio = () => {
                     <p className="text-blue-900 text-sm">{group.bestFor}</p>
                   </div>
 
-                  {/* Properties list */}
                   <div className="space-y-4">
                     {group.properties.map((property, idx) => (
                       <div
@@ -320,7 +562,6 @@ const PropertyPortfolio = () => {
           ))}
         </div>
 
-        {/* Footer */}
         <div className="mt-8 text-center text-gray-500 text-sm">
           <p>Property Portfolio • Last Updated: December 2025</p>
         </div>
@@ -330,4 +571,5 @@ const PropertyPortfolio = () => {
 };
 
 export default PropertyPortfolio;
+
 
