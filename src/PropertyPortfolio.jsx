@@ -458,6 +458,7 @@ const PropertyPortfolio = () => {
 
               {selectedGroup === group.id && (
                 <div className="p-6 space-y-6 bg-slate-50">
+                  {/* Group stats */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-white rounded-xl p-4 border border-gray-100">
                       <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
@@ -477,6 +478,7 @@ const PropertyPortfolio = () => {
                     </div>
                   </div>
 
+                  {/* Dating scene */}
                   <div className="bg-pink-50 border border-pink-200 rounded-xl p-4">
                     <p className="text-sm font-semibold text-pink-800 mb-2 flex items-center gap-2">
                       <HeartIcon className="text-pink-600" size={18} />
@@ -485,6 +487,7 @@ const PropertyPortfolio = () => {
                     <p className="text-pink-900 text-sm">{group.datingScene}</p>
                   </div>
 
+                  {/* Best for */}
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                     <p className="text-sm font-semibold text-blue-800 mb-2">
                       Best For
@@ -492,6 +495,7 @@ const PropertyPortfolio = () => {
                     <p className="text-blue-900 text-sm">{group.bestFor}</p>
                   </div>
 
+                  {/* Properties */}
                   <div className="space-y-4">
                     {group.properties.map((property, idx) => (
                       <div
@@ -562,6 +566,7 @@ const PropertyPortfolio = () => {
           ))}
         </div>
 
+        {/* Footer */}
         <div className="mt-8 text-center text-gray-500 text-sm">
           <p>Property Portfolio • Last Updated: December 2025</p>
         </div>
@@ -571,5 +576,6 @@ const PropertyPortfolio = () => {
 };
 
 export default PropertyPortfolio;
+
 
 
