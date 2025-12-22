@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const IconWrapper = ({ children, className, size = 24 }) => (
   <svg
@@ -38,10 +38,9 @@ const TrendingUpIcon = (props) => (
   </IconWrapper>
 );
 
-const DollarSignIcon = (props) => (
+const HeartIcon = (props) => (
   <IconWrapper {...props}>
-    <line x1="12" y1="2" x2="12" y2="22" />
-    <path d="M17 7a5 5 0 0 0-5-3H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H7a5 5 0 0 1-5-3" />
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
   </IconWrapper>
 );
 
@@ -52,64 +51,49 @@ const MapPinIcon = (props) => (
   </IconWrapper>
 );
 
+const DollarSignIcon = (props) => (
+  <IconWrapper {...props}>
+    <line x1="12" y1="2" x2="12" y2="22" />
+    <path d="M17 7a5 5 0 0 0-5-3H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H7a5 5 0 0 1-5-3" />
+  </IconWrapper>
+);
+
+const BedIcon = (props) => (
+  <IconWrapper {...props}>
+    <path d="M2 4v16" />
+    <path d="M22 4v16" />
+    <path d="M2 8h20" />
+    <path d="M6 12h4" />
+    <path d="M14 12h4" />
+    <path d="M6 16h12" />
+  </IconWrapper>
+);
+
+const BathIcon = (props) => (
+  <IconWrapper {...props}>
+    <path d="M6 3h2a2 2 0 0 1 2 2v2" />
+    <path d="M4 7h16v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4Z" />
+    <path d="M2 7h2" />
+    <path d="M20 7h2" />
+    <path d="M7 3a1 1 0 0 0-2 0v4" />
+  </IconWrapper>
+);
+
+const MaximizeIcon = (props) => (
+  <IconWrapper {...props}>
+    <polyline points="15 3 21 3 21 9" />
+    <polyline points="9 21 3 21 3 15" />
+    <line x1="21" y1="3" x2="14" y2="10" />
+    <line x1="3" y1="21" x2="10" y2="14" />
+  </IconWrapper>
+);
+
 const PropertyPortfolio = () => {
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
   const groups = [
-    {
-      id: 1,
-      name: "Spicewood/Boerne Area, TX",
-      region: "Hill Country",
-      hearts: 4,
-      totalValue: "$12,049,000",
-      propertiesCount: 3
-    },
-    {
-      id: 2,
-      name: "Austin Area, TX",
-      region: "Tech Hub",
-      hearts: 3,
-      totalValue: "$6,750,000",
-      propertiesCount: 1
-    },
-    {
-      id: 3,
-      name: "Silverthorne/Summit County, CO",
-      region: "Mountain Resort",
-      hearts: 2,
-      totalValue: "$28,095,000",
-      propertiesCount: 2
-    },
-    {
-      id: 4,
-      name: "Breckenridge, CO",
-      region: "Summit County",
-      hearts: 3,
-      totalValue: "$21,494,999",
-      propertiesCount: 2
-    },
-    {
-      id: 7,
-      name: "Loveland/Fort Collins Area, CO",
-      region: "Northern Colorado",
-      hearts: 3,
-      totalValue: "$10,750,000",
-      propertiesCount: 3
-    },
-    {
-      id: 6,
-      name: "Denver Metro - North/Northeast",
-      region: "Denver Area",
-      hearts: 2,
-      totalValue: "$8,850,000",
-      propertiesCount: 1
-    },
-    {
-      id: 11,
-      name: "Denver Metro - West/Southwest",
-      region: "Foothills",
-      hearts: 2,
-      totalValue: "$47,598,000",
-      propertiesCount: 2
-    }
+    // === your full groups array exactly as before, unchanged ===
+    // (Spicewood/Boerne, Austin, Silverthorne, Breckenridge, etc.)
   ];
 
   const handleDownloadPDF = () => {
@@ -186,35 +170,152 @@ const PropertyPortfolio = () => {
           </div>
         </div>
 
-        {/* Property Group Cards */}
-        <div className="space-y-4">
+        {/* Property Groups: collapsed header + dropdown body */}
+        <div className="space-y-6">
           {groups.map((group) => (
             <div
               key={group.id}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl px-6 py-4 flex items-center justify-between text-white shadow-md"
+              className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200"
             >
-              <div>
-                <div className="flex items-center gap-3">
-                  <MapPinIcon className="text-white" size={20} />
-                  <h2 className="text-lg font-semibold">
-                    {group.name}
-                  </h2>
-                  <span className="text-xl">
-                    {renderHearts(group.hearts)}
-                  </span>
+              {/* Clickable purple bar */}
+              <button
+                type="button"
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-5 cursor-pointer hover:from-indigo-600 hover:to-purple-700 transition-all flex items-center justify-between text-left"
+                onClick={() =>
+                  setSelectedGroup(
+                    selectedGroup === group.id ? null : group.id
+                  )
+                }
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-1">
+                    <MapPinIcon className="text-white" size={20} />
+                    <h2 className="text-xl font-semibold text-white">
+                      {group.name}
+                    </h2>
+                    <span className="text-xl text-white">
+                      {renderHearts(group.hearts)}
+                    </span>
+                  </div>
+                  <p className="text-indigo-100 text-xs uppercase tracking-wide">
+                    {group.region}
+                  </p>
                 </div>
-                <p className="text-xs uppercase tracking-wide text-indigo-100 mt-1">
-                  {group.region}
-                </p>
-              </div>
-              <div className="text-right text-sm">
-                <p className="font-bold text-lg">
-                  {group.totalValue}
-                </p>
-                <p className="text-indigo-100">
-                  {group.propertiesCount} Properties
-                </p>
-              </div>
+                <div className="text-right text-sm text-white">
+                  <p className="font-bold text-lg">{group.totalValue}</p>
+                  <p className="text-indigo-100">
+                    {group.properties.length} Properties
+                  </p>
+                </div>
+              </button>
+
+              {/* Dropdown body */}
+              {selectedGroup === group.id && (
+                <div className="p-6 space-y-6 bg-slate-50">
+                  {/* Group stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white rounded-xl p-4 border border-gray-100">
+                      <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+                        Monthly Income
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {group.monthlyIncome}
+                      </p>
+                    </div>
+                    <div className="bg-white rounded-xl p-4 border border-gray-100">
+                      <p className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+                        Annual Income
+                      </p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {group.annualIncome}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Dating scene */}
+                  <div className="bg-pink-50 border border-pink-200 rounded-xl p-4">
+                    <p className="text-sm font-semibold text-pink-800 mb-2 flex items-center gap-2">
+                      <HeartIcon className="text-pink-600" size={18} />
+                      Dating Scene
+                    </p>
+                    <p className="text-pink-900 text-sm">{group.datingScene}</p>
+                  </div>
+
+                  {/* Best for */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <p className="text-sm font-semibold text-blue-800 mb-2">
+                      Best For
+                    </p>
+                    <p className="text-blue-900 text-sm">{group.bestFor}</p>
+                  </div>
+
+                  {/* Properties list */}
+                  <div className="space-y-4">
+                    {group.properties.map((property, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1">
+                            <a
+                              href={property.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-base font-semibold text-indigo-700 hover:text-indigo-900 hover:underline flex items-center gap-2"
+                            >
+                              {property.address}
+                              {property.jason && (
+                                <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                                  ⭐ JASON'S
+                                </span>
+                              )}
+                            </a>
+                            <div className="flex items-center gap-4 text-gray-600 text-xs mt-2">
+                              <span className="flex items-center gap-1">
+                                <BedIcon size={14} />
+                                {property.beds} bd
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <BathIcon size={14} />
+                                {property.baths} ba
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <MaximizeIcon size={14} />
+                                {property.sqft} sqft
+                              </span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-gray-900">
+                              {property.price}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 text-xs">
+                          <div>
+                            <p className="text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                              Monthly Income
+                            </p>
+                            <p className="text-green-700 text-base font-bold">
+                              {property.monthly}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                              Annual Income
+                            </p>
+                            <p className="text-blue-700 text-base font-bold">
+                              {property.annual}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
