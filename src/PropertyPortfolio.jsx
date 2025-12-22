@@ -1,19 +1,4 @@
 import React, { useState } from "react"
-<button ...>
-  <span>⬇️</span>
-  Download PDF
-</button>
-
-<Home ... />        → <span className="text-green-600 text-2xl">🏠</span>
-<TrendingUp ... />  → <span className="text-blue-600 text-2xl">📈</span>
-<DollarSign ... />  → <span className="text-purple-600 text-2xl">$</span>
-<MapPin ... />      → <span className="text-white text-2xl">📍</span>
-<Heart ... />       → <span className="text-pink-600 text-lg">❤️</span>
-<Bed ... />         → <span>🛏</span>
-<Bath ... />        → <span>🛁</span>
-<Maximize ... />    → <span>⬜</span>
-
-
 
 const PropertyPortfolio = () => {
   const [selectedGroup, setSelectedGroup] = useState(null)
@@ -306,7 +291,7 @@ const PropertyPortfolio = () => {
               onClick={handleDownloadPDF}
               className="no-print flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all"
             >
-              <Download size={20} />
+              <span className="text-xl">⬇️</span>
               Download PDF
             </button>
           </div>
@@ -315,7 +300,7 @@ const PropertyPortfolio = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
               <div className="flex items-center gap-3 mb-2">
-                <Home className="text-green-600" size={24} />
+                <span className="text-green-600 text-2xl">🏠</span>
                 <span className="text-sm font-semibold text-green-700 uppercase tracking-wide">
                   Total Value
                 </span>
@@ -325,7 +310,7 @@ const PropertyPortfolio = () => {
 
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-200">
               <div className="flex items-center gap-3 mb-2">
-                <TrendingUp className="text-blue-600" size={24} />
+                <span className="text-blue-600 text-2xl">📈</span>
                 <span className="text-sm font-semibold text-blue-700 uppercase tracking-wide">
                   Monthly Income
                 </span>
@@ -335,7 +320,7 @@ const PropertyPortfolio = () => {
 
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200">
               <div className="flex items-center gap-3 mb-2">
-                <DollarSign className="text-purple-600" size={24} />
+                <span className="text-purple-600 text-2xl">$</span>
                 <span className="text-sm font-semibold text-purple-700 uppercase tracking-wide">
                   Annual Income
                 </span>
@@ -361,7 +346,7 @@ const PropertyPortfolio = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <MapPin className="text-white" size={24} />
+                      <span className="text-white text-2xl mr-1">📍</span>
                       <h2 className="text-2xl font-bold text-white">
                         {group.name}
                       </h2>
@@ -408,7 +393,7 @@ const PropertyPortfolio = () => {
 
                   <div className="bg-pink-50 border border-pink-200 rounded-xl p-4 mb-6">
                     <p className="text-sm font-semibold text-pink-800 mb-2 flex items-center gap-2">
-                      <Heart className="text-pink-600" size={18} />
+                      <span className="text-pink-600 text-lg">❤️</span>
                       Dating Scene
                     </p>
                     <p className="text-pink-900">{group.datingScene}</p>
@@ -445,15 +430,15 @@ const PropertyPortfolio = () => {
                             </a>
                             <div className="flex items-center gap-4 text-gray-600 text-sm">
                               <span className="flex items-center gap-1">
-                                <Bed size={16} />
+                                <span>🛏</span>
                                 {property.beds} bd
                               </span>
                               <span className="flex items-center gap-1">
-                                <Bath size={16} />
+                                <span>🛁</span>
                                 {property.baths} ba
                               </span>
                               <span className="flex items-center gap-1">
-                                <Maximize size={16} />
+                                <span>⬜</span>
                                 {property.sqft} sqft
                               </span>
                             </div>
@@ -470,7 +455,7 @@ const PropertyPortfolio = () => {
                             <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                               Monthly Income
                             </p>
-                              <p className="text-lg font-bold text-green-700">
+                            <p className="text-lg font-bold text-green-700">
                               {property.monthly}
                             </p>
                           </div>
