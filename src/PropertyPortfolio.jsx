@@ -1,15 +1,18 @@
 import React, { useState } from "react"
-import {
-  Download,
-  Home,
-  TrendingUp,
-  Heart,
-  MapPin,
-  DollarSign,
-  Bed,
-  Bath,
-  Maximize,
-} from "lucide-react"
+<button ...>
+  <span>⬇️</span>
+  Download PDF
+</button>
+
+<Home ... />        → <span className="text-green-600 text-2xl">🏠</span>
+<TrendingUp ... />  → <span className="text-blue-600 text-2xl">📈</span>
+<DollarSign ... />  → <span className="text-purple-600 text-2xl">$</span>
+<MapPin ... />      → <span className="text-white text-2xl">📍</span>
+<Heart ... />       → <span className="text-pink-600 text-lg">❤️</span>
+<Bed ... />         → <span>🛏</span>
+<Bath ... />        → <span>🛁</span>
+<Maximize ... />    → <span>⬜</span>
+
 
 
 const PropertyPortfolio = () => {
