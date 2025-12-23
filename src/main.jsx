@@ -1,10 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import PropertyPortfolio from './PropertyPortfolio.jsx';
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+// ✅ Global luxury design system (loaded ONCE)
+import "./App.css";
+
+// ✅ Root app component
+import PropertyPortfolio from "./PropertyPortfolio.jsx";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <PropertyPortfolio />
-  </React.StrictMode>,
+  </React.StrictMode>
 );
