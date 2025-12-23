@@ -42,7 +42,7 @@ export default function App() {
         </button>
 
         <button onClick={() => window.print()}>
-          Download PDF
+          Download PDY
         </button>
       </div>
 
