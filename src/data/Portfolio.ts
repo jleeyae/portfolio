@@ -651,7 +651,6 @@ export const portfolio: Portfolio = {
           zillowUrl: "",
           privateNotes: { enabled: false, notes: ["Would host big gatherings comfortably"] },
         },
-
     /* =====================================================
        GROUP 9 — LONGMONT AREA, CO
        ===================================================== */
@@ -912,7 +911,10 @@ export const portfolio: Portfolio = {
             notes: ["Social entertaining potential"],
           },
         },
-          ],
-        },
       ],
-    };
+    }
+
+      ],
+    },
+  ],
+};
