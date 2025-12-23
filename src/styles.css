@@ -22,6 +22,8 @@
   --stroke-pink: rgba(236,72,153,.20);
 }
 
+*{ box-sizing: border-box; }
+
 body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -44,9 +46,7 @@ body{
   border: 1px solid rgba(15,23,42,.06);
 }
 
-.section{
-  padding: 26px;
-}
+.section{ padding: 26px; }
 
 .h1{
   font-size: 44px;
@@ -72,8 +72,51 @@ body{
   border-radius: 16px;
   box-shadow: var(--shadow-soft);
   cursor:pointer;
-  font-weight: 700;
+  font-weight: 800;
 }
+
+.controls{
+  margin-top: 18px;
+  display:grid;
+  grid-template-columns: 1.3fr .8fr .8fr .8fr .9fr;
+  gap: 10px;
+}
+
+.input, .select{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.10);
+  padding: 12px 12px;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 8px 18px rgba(15,23,42,.04);
+  font-weight: 650;
+  color: var(--text);
+}
+
+.toggle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.9);
+  box-shadow: 0 8px 18px rgba(15,23,42,.04);
+  font-weight: 800;
+}
+
+.toggle input{ transform: scale(1.1); }
+
+@media (max-width: 920px){
+  .controls{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px){
+  .controls{ grid-template-columns: 1fr; }
+  .h1{ font-size: 38px; }
+}
+
+.groupWrap{ margin-top: 18px; display:flex; flex-direction:column; gap: 16px; }
 
 .groupHeader{
   background: linear-gradient(135deg, var(--purple1), var(--purple2));
@@ -83,6 +126,9 @@ body{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
+  cursor:pointer;
+  user-select:none;
+  border: 1px solid rgba(255,255,255,.12);
 }
 
 .groupHeader .kicker{
@@ -96,12 +142,13 @@ body{
 .groupHeader .title{
   font-size: 30px;
   margin: 0;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .groupHeader .right{
   text-align:right;
   opacity: .95;
+  font-weight: 850;
 }
 
 .pillRow{
@@ -116,8 +163,17 @@ body{
   border: 1px solid rgba(255,255,255,.18);
   padding: 8px 12px;
   border-radius: 999px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 13px;
+}
+
+.groupBody{
+  margin-top: 12px;
+  padding: 18px;
+  border-radius: var(--radius-xl);
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(15,23,42,.06);
+  box-shadow: var(--shadow-soft);
 }
 
 .panel{
@@ -132,7 +188,7 @@ body{
 .panel.pink{  background: var(--panel-pink);  border-color: var(--stroke-pink); }
 
 .panel .label{
-  font-weight: 800;
+  font-weight: 900;
   color: rgba(15,23,42,.72);
   font-size: 13px;
   letter-spacing: .06em;
@@ -140,11 +196,23 @@ body{
   margin-bottom: 8px;
 }
 
-.bigValue{
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: -.02em;
+.panel .value{
+  font-size: 18px;
+  font-weight: 800;
+  color: rgba(15,23,42,.92);
 }
+
+.twoCol{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 12px;
+}
+@media (max-width: 640px){
+  .twoCol{ grid-template-columns: 1fr; }
+}
+
+.propertyList{ margin-top: 14px; display:flex; flex-direction:column; gap: 12px; }
 
 .propertyCard{
   border-radius: var(--radius-xl);
@@ -162,10 +230,16 @@ body{
 }
 
 .addr{
-  font-weight: 900;
+  font-weight: 950;
   font-size: 20px;
   color: #4f46e5;
   text-decoration: none;
+}
+
+.price{
+  font-weight: 950;
+  font-size: 26px;
+  letter-spacing: -.02em;
 }
 
 .meta{
@@ -174,7 +248,7 @@ body{
   display:flex;
   gap:18px;
   flex-wrap:wrap;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .divider{
@@ -183,13 +257,29 @@ body{
   margin: 14px 0;
 }
 
-.twoCol{
+.smallGrid{
   display:grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
-
 @media (max-width: 640px){
-  .twoCol{ grid-template-columns: 1fr; }
-  .h1{ font-size: 38px; }
+  .smallGrid{ grid-template-columns: 1fr; }
 }
+
+.note{
+  color: rgba(15,23,42,.78);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.detailsBtn{
+  margin-top: 10px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(15,23,42,.03);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor:pointer;
+}
+
+.badgeRow{ display:flex; align-items:center; gap: 10px; }
