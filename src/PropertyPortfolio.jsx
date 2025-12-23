@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+// src/PropertyPortfolio.jsx
+import React, { useMemo, useState, useEffect } from "react";
 import "./App.css";
 
 import { portfolio } from "./data/Portfolio";
@@ -9,36 +10,79 @@ import { useViewer } from "./hooks/useViewer";
 import { useFamilyVoting, Stars } from "./hooks/useFamilyVoting";
 
 const money = (n) =>
-  n?.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  n?.toLocaleString?.(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }) ?? "";
 
 const fmtRange = (min, max) => `${money(min)}–${money(max)}`;
 
 const fullAddress = (p) => `${p.address}, ${p.city}, ${p.state}`;
 
-const mapsUrlFor = (p) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress(p))}`;
+const areaMapsUrlFor = (group) =>
+  `https://www.google.com/maps/@${group.map.lat},${group.map.lng},${group.map.zoom}z`;
 
-// “Open in Redfin” safely: use Google search constrained to redfin.
-// This avoids wrong-house links and works even without Redfin IDs.
-const redfinUrlFor = (p) =>
-  `https://www.google.com/search?q=${encodeURIComponent(`${fullAddress(p)} site:redfin.com`)}`;
+const fallbackThumb = (p) =>
+  `https://source.unsplash.com/640x480/?${encodeURIComponent(
+    `${p.city} ${p.state} luxury home exterior`
+  )}`;
 
-const propertyThumb = (p) =>
-  `https://source.unsplash.com/640x480/?${encodeURIComponent(`${p.city} ${p.state} luxury home exterior`)}`;
+const propertyThumb = (p) => {
+  const first = p?.vibes?.photos?.[0]?.url;
+  return first || fallbackThumb(p);
+};
 
 function RoseRow({ count }) {
-  return <span className="pp-roses" aria-label="rating">{Array.from({ length: count }).map((_, i) => <span key={i}>🌹</span>)}</span>;
+  return (
+    <span className="pp-roses" aria-label="rating">
+      {Array.from({ length: count }).map((_, i) => (
+        <span key={i}>🌹</span>
+      ))}
+    </span>
+  );
 }
 
-function VibeRow({ vibes }) {
+/**
+ * New vibes shape:
+ * group.vibes = { title, subtitle, photos:[{ url, credit? }] }
+ * We'll render photos as a luxe "vibe strip", each click opens area map.
+ */
+function VibeStrip({ group }) {
+  const vibe = group?.vibes;
+  const photos = vibe?.photos || [];
+  if (!photos.length) return null;
+
+  const href = areaMapsUrlFor(group);
+
   return (
-    <div className="pp-vibes">
-      {vibes.map((v) => (
-        <a key={v.id} className="pp-vibe" href={v.mapsUrl} target="_blank" rel="noreferrer">
-          <img className="pp-vibe-img" src={v.imageUrl} alt={v.label} loading="lazy" />
-          <div className="pp-vibe-label">{v.label}</div>
-        </a>
-      ))}
+    <div className="pp-vibe-strip">
+      <div className="pp-vibe-strip-head">
+        <div className="pp-vibe-strip-title">{vibe.title}</div>
+        {vibe.subtitle ? (
+          <div className="pp-vibe-strip-sub">{vibe.subtitle}</div>
+        ) : null}
+      </div>
+
+      <div className="pp-vibe-strip-row">
+        {photos.slice(0, 6).map((ph, idx) => (
+          <a
+            key={idx}
+            className="pp-vibe-tile"
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            title="Open area in Maps"
+          >
+            <img
+              className="pp-vibe-img"
+              src={ph.url}
+              alt={`${vibe.title} vibe ${idx + 1}`}
+              loading="lazy"
+            />
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
@@ -58,10 +102,36 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
 
         <div className="pp-group-sub">
           <span className="pp-chip">{group.region}</span>
-          <a className="pp-link" href={`https://www.google.com/maps/@${group.map.lat},${group.map.lng},${group.map.zoom}z`} target="_blank" rel="noreferrer">
-            Open area in Maps
-          </a>
+
+          <div className="pp-group-links">
+            <a
+              className="pp-link"
+              href={areaMapsUrlFor(group)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open area in Maps
+            </a>
+          </div>
         </div>
+
+        {/* Map preview (needs VITE_MAPBOX_TOKEN in env to be non-null in your dataset builder) */}
+        {group?.map?.staticUrl ? (
+          <a
+            className="pp-map-preview"
+            href={areaMapsUrlFor(group)}
+            target="_blank"
+            rel="noreferrer"
+            title="Open area in Maps"
+          >
+            <img
+              className="pp-map-img"
+              src={group.map.staticUrl}
+              alt={`${group.name} map preview`}
+              loading="lazy"
+            />
+          </a>
+        ) : null}
 
         <div className="pp-group-copy">
           <div className="pp-info">
@@ -74,15 +144,20 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
           </div>
         </div>
 
-        <VibeRow vibes={group.vibes || []} />
+        <VibeStrip group={group} />
       </header>
 
       <div className="pp-group-controls">
-        <button className="pp-btn ghost" type="button" onClick={() => setOpenCapRate((v) => !v)}>
+        <button
+          className="pp-btn ghost"
+          type="button"
+          onClick={() => setOpenCapRate((v) => !v)}
+        >
           {openCapRate ? "Hide cap-rate math" : "Show cap-rate math"}
         </button>
+
         <div className="pp-group-controls-hint">
-          Links: house-specific Zillow is gone. We open Maps + a Redfin search for the exact address.
+          Links: we open <b>Maps</b> + <b>Redfin</b> (no fragile Zillow IDs).
         </div>
       </div>
 
@@ -91,10 +166,28 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
           const sum = voting.summary(p.id);
           const fav = favorites.isFavorite(p.id);
 
+          // Prefer dataset links. Fall back safely if missing.
+          const mapsHref =
+            p?.links?.maps ||
+            `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              fullAddress(p)
+            )}`;
+
+          const redfinHref =
+            p?.links?.redfin ||
+            `https://www.google.com/search?q=${encodeURIComponent(
+              `${fullAddress(p)} site:redfin.com`
+            )}`;
+
           return (
             <article key={p.id} className={`pp-prop ${fav ? "is-fav" : ""}`}>
               <div className="pp-prop-left">
-                <img className="pp-prop-img" src={propertyThumb(p)} alt={`${p.city} preview`} loading="lazy" />
+                <img
+                  className="pp-prop-img"
+                  src={propertyThumb(p)}
+                  alt={`${p.city} preview`}
+                  loading="lazy"
+                />
                 <div className="pp-prop-badges">
                   {p.isJason ? <span className="pp-badge">JASON’S</span> : null}
                   {fav ? <span className="pp-badge subtle">★ Favorite</span> : null}
@@ -108,19 +201,36 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                     <div className="pp-prop-meta">
                       <span>{p.beds} bd</span>
                       <span>{p.baths} ba</span>
-                      <span>{p.sqft?.toLocaleString?.() ?? p.sqft} sqft</span>
+                      <span>
+                        {p.sqft?.toLocaleString?.() ?? p.sqft} sqft
+                      </span>
                     </div>
                   </div>
 
                   <div className="pp-prop-actions">
-                    <button className="pp-btn" type="button" onClick={() => favorites.toggleFavorite(p.id)}>
+                    <button
+                      className="pp-btn"
+                      type="button"
+                      onClick={() => favorites.toggleFavorite(p.id)}
+                    >
                       {fav ? "Unfavorite" : "Favorite"}
                     </button>
 
-                    <a className="pp-btn outline" href={mapsUrlFor(p)} target="_blank" rel="noreferrer">
+                    <a
+                      className="pp-btn outline"
+                      href={mapsHref}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Open in Maps
                     </a>
-                    <a className="pp-btn outline" href={redfinUrlFor(p)} target="_blank" rel="noreferrer">
+
+                    <a
+                      className="pp-btn outline"
+                      href={redfinHref}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Open in Redfin
                     </a>
                   </div>
@@ -131,13 +241,19 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                     <div className="pp-stat-label">Price</div>
                     <div className="pp-stat-value">{money(p.price)}</div>
                   </div>
+
                   <div className="pp-stat">
                     <div className="pp-stat-label">Monthly income</div>
-                    <div className="pp-stat-value">{fmtRange(p.monthlyIncome.min, p.monthlyIncome.max)}</div>
+                    <div className="pp-stat-value">
+                      {fmtRange(p.monthlyIncome.min, p.monthlyIncome.max)}
+                    </div>
                   </div>
+
                   <div className="pp-stat">
                     <div className="pp-stat-label">Annual income</div>
-                    <div className="pp-stat-value">{fmtRange(p.annualIncome.min, p.annualIncome.max)}</div>
+                    <div className="pp-stat-value">
+                      {fmtRange(p.annualIncome.min, p.annualIncome.max)}
+                    </div>
                   </div>
                 </div>
 
@@ -154,10 +270,12 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                     </div>
                     <div className="pp-cap-row">
                       <div className="pp-cap-label">Estimated cap rate</div>
-                      <div className="pp-cap-val">{p.capRate.estimatedCapRate.toFixed(1)}%</div>
+                      <div className="pp-cap-val">
+                        {Number(p.capRate.estimatedCapRate || 0).toFixed(1)}%
+                      </div>
                     </div>
                     <div className="pp-cap-foot">
-                      (Hidden by default because family conversations tend to start with vibes + utility, then math.)
+                      Hidden by default because the first conversation is usually vibes, then math.
                     </div>
                   </div>
                 ) : null}
@@ -170,15 +288,15 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                     </div>
                   </div>
 
-                  <Stars
-                    value={sum.mine}
-                    title="Your rating"
-                    onChange={(n) => voting.rate(p.id, n)}
-                  />
+                  <Stars value={sum.mine} title="Your rating" onChange={(n) => voting.rate(p.id, n)} />
                 </div>
 
                 {notesOn ? (
-                  <FamilyNotesBlock propertyId={p.id} viewerId={viewerId} privateNotes={p.privateNotes} />
+                  <FamilyNotesBlock
+                    propertyId={p.id}
+                    viewerId={viewerId}
+                    privateNotes={p.privateNotes}
+                  />
                 ) : null}
 
                 {convoOn ? <ConversationBlock propertyId={p.id} viewerId={viewerId} /> : null}
@@ -214,7 +332,9 @@ function FamilyNotesBlock({ propertyId, viewerId, privateNotes }) {
         <div className="pp-notes-seed">
           <div className="pp-notes-seed-title">Seed notes (from dataset)</div>
           <ul>
-            {privateNotes.notes.map((n, i) => <li key={i}>{n}</li>)}
+            {privateNotes.notes.map((n, i) => (
+              <li key={i}>{n}</li>
+            ))}
           </ul>
         </div>
       ) : null}
@@ -257,15 +377,17 @@ function ConversationBlock({ propertyId, viewerId }) {
       </div>
 
       <div className="pp-thread-list">
-        {items.length ? items.map((m) => (
-          <div key={m.id} className="pp-msg">
-            <div className="pp-msg-meta">
-              <span className="pp-msg-author">{m.author}</span>
-              <span className="pp-msg-ts">{new Date(m.ts).toLocaleString()}</span>
+        {items.length ? (
+          items.map((m) => (
+            <div key={m.id} className="pp-msg">
+              <div className="pp-msg-meta">
+                <span className="pp-msg-author">{m.author}</span>
+                <span className="pp-msg-ts">{new Date(m.ts).toLocaleString()}</span>
+              </div>
+              <div className="pp-msg-text">{m.text}</div>
             </div>
-            <div className="pp-msg-text">{m.text}</div>
-          </div>
-        )) : (
+          ))
+        ) : (
           <div className="pp-thread-empty">No messages yet. Start the story ✍️</div>
         )}
       </div>
@@ -277,7 +399,9 @@ function ConversationBlock({ propertyId, viewerId }) {
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Add a thought…"
         />
-        <button className="pp-btn" type="button" onClick={post}>Post</button>
+        <button className="pp-btn" type="button" onClick={post}>
+          Post
+        </button>
       </div>
     </div>
   );
@@ -294,8 +418,7 @@ export default function PropertyPortfolio() {
 
   const groups = useMemo(() => portfolio.groups || [], []);
 
-  // Apply dark mode class
-  React.useEffect(() => {
+  useEffect(() => {
     document.body.classList.toggle("dark", dark);
   }, [dark]);
 
@@ -343,7 +466,7 @@ export default function PropertyPortfolio() {
             <div className="pp-kicker-small">
               Favorites saved: <b>{favorites.favoritesCount}</b>
               <span className="pp-dot">•</span>
-              Links: <b>Maps</b> + <b>Redfin search</b>
+              Links: <b>Maps</b> + <b>Redfin</b>
             </div>
           </div>
         </div>

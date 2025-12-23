@@ -660,3 +660,57 @@ body.dark .pp-textarea { background: rgba(0,0,0,0.20); }
 
   .pp-vibe-img { filter: none; }
 }
+/* ================================
+   STAR RATING (Family Voting)
+================================ */
+
+.pp-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pp-star {
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: #c7c7d1;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.pp-star.is-on {
+  color: #6a5cff; /* luxury purple */
+}
+
+.pp-star:hover {
+  transform: translateY(-1px);
+  color: #5b4bff;
+}
+
+/* Clear (✕) — intentionally quiet */
+.pp-star-clear {
+  font-size: 0.85rem;
+  opacity: 0.45;
+  margin-left: 6px;
+}
+
+.pp-star-clear:hover {
+  opacity: 0.8;
+  color: #111827;
+}
+
+/* Dark mode polish */
+body.dark .pp-star {
+  color: #6b7280;
+}
+
+body.dark .pp-star.is-on {
+  color: #a5b4fc;
+}
+
+body.dark .pp-star-clear:hover {
+  color: #e5e7eb;
+}
