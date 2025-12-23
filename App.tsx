@@ -7,13 +7,17 @@ import MapView from "./pages/MapView";
 import { useFamilyNotes } from "./hooks/useFamilyNotes";
 import { useConversationMode } from "./hooks/useConversationMode";
 
-import "./App.css";
+/**
+ * IMPORTANT:
+ * ❌ Do NOT import App.css here
+ * ✅ App.css is loaded once in main.tsx and applies globally
+ */
 
 export default function App() {
   // View state
   const [mapOnly, setMapOnly] = useState(false);
 
-  // Toggles
+  // Feature toggles
   const { enabled: notesOn, toggle: toggleNotes } = useFamilyNotes();
   const { enabled: convoOn, toggle: toggleConvo } = useConversationMode();
 
@@ -23,7 +27,7 @@ export default function App() {
           TOP CONTROLS
          ===================== */}
       <div className="controls">
-        <button onClick={() => setMapOnly(!mapOnly)}>
+        <button onClick={() => setMapOnly((v) => !v)}>
           {mapOnly ? "Back to List" : "Map View"}
         </button>
 
@@ -42,7 +46,7 @@ export default function App() {
         </button>
 
         <button onClick={() => window.print()}>
-          Download PDY
+          Download PDF
         </button>
       </div>
 
