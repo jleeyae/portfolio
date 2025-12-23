@@ -48,41 +48,20 @@ function RoseRow({ count }) {
  * group.vibes = { title, subtitle, photos:[{ url, credit? }] }
  * We'll render photos as a luxe "vibe strip", each click opens area map.
  */
-function VibeStrip({ group }) {
-  const vibe = group?.vibes;
-  const photos = vibe?.photos || [];
-  if (!photos.length) return null;
-
-  const href = areaMapsUrlFor(group);
+function VibeRow({ vibes }) {
+  if (!vibes?.photos?.length) return null;
 
   return (
-    <div className="pp-vibe-strip">
-      <div className="pp-vibe-strip-head">
-        <div className="pp-vibe-strip-title">{vibe.title}</div>
-        {vibe.subtitle ? (
-          <div className="pp-vibe-strip-sub">{vibe.subtitle}</div>
-        ) : null}
-      </div>
-
-      <div className="pp-vibe-strip-row">
-        {photos.slice(0, 6).map((ph, idx) => (
-          <a
-            key={idx}
-            className="pp-vibe-tile"
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            title="Open area in Maps"
-          >
-            <img
-              className="pp-vibe-img"
-              src={ph.url}
-              alt={`${vibe.title} vibe ${idx + 1}`}
-              loading="lazy"
-            />
-          </a>
-        ))}
-      </div>
+    <div className="pp-vibes">
+      {vibes.photos.map((p, i) => (
+        <img
+          key={i}
+          className="pp-vibe-img"
+          src={p.url}
+          alt={vibes.title}
+          loading="lazy"
+        />
+      ))}
     </div>
   );
 }
