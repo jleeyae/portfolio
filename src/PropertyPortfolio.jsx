@@ -40,9 +40,9 @@ const redfinUrlFor = (p) =>
 
 // House image preview (not listing photos): Unsplash query
 const propertyThumb = (p) =>
-  `https://source.unsplash.com/640x480/?${encodeURIComponent(
-    `${p.city} ${p.state} luxury home exterior`
-  )}`;
+  `https://picsum.photos/seed/${encodeURIComponent(
+    `${p.id}-${p.city}`
+  )}/640/420`;
 
 // Group map preview (if you provide map.staticUrl in data)
 const groupMapImg = (group) => {
@@ -74,29 +74,47 @@ function RoseRow({ count }) {
 function VibeRow({ vibes }) {
   if (!vibes) return null;
 
-  // New shape: object with photos
-  if (typeof vibes === "object" && !Array.isArray(vibes)) {
-    const photos = Array.isArray(vibes.photos) ? vibes.photos : [];
-    if (!photos.length) return null;
+  // Normalize into an array of image URLs
+  let images = [];
 
-    return (
-      <div className="pp-vibes" aria-label={vibes.title || "Vibes"}>
-        {photos.slice(0, 6).map((p, i) => {
-          const url = p?.url;
-          if (!url) return null;
-          return (
-            <img
-              key={`${url}-${i}`}
-              className="pp-vibe-img"
-              src={url}
-              alt={vibes.title || "Vibe photo"}
-              loading="lazy"
-            />
-          );
-        })}
-      </div>
+  // New structured vibes
+  if (vibes.photos && Array.isArray(vibes.photos)) {
+    images = vibes.photos.map((p, i) =>
+      p.url ||
+      `https://picsum.photos/seed/${encodeURIComponent(
+        `${vibes.title || "vibe"}-${i}`
+      )}/360/240`
     );
   }
+
+  // Old array-based vibes
+  if (Array.isArray(vibes)) {
+    images = vibes.map(
+      (v, i) =>
+        v.imageUrl ||
+        `https://picsum.photos/seed/${encodeURIComponent(
+          `${v.label || "vibe"}-${i}`
+        )}/360/240`
+    );
+  }
+
+  if (!images.length) return null;
+
+  return (
+    <div className="pp-vibes">
+      {images.slice(0, 6).map((src, i) => (
+        <img
+          key={i}
+          className="pp-vibe-img"
+          src={src}
+          alt="Area vibe"
+          loading="lazy"
+        />
+      ))}
+    </div>
+  );
+}
+
 
   // Old shape: array
   if (Array.isArray(vibes)) {
@@ -139,7 +157,6 @@ function VibeRow({ vibes }) {
   }
 
   return null;
-}
 
 function FamilyNotesBlock({ propertyId, viewerId, privateNotes }) {
   const key = `pp.notes.${propertyId}.${viewerId}`;
