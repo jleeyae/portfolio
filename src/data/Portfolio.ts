@@ -3,9 +3,9 @@
    ========================================================= */
 
 export type CapRate = {
-  enabled: boolean;           // hidden by default
-  estimatedNOI: number;       // annual
-  estimatedCapRate: number;   // percent (e.g. 3.8)
+  enabled: boolean; // hidden by default
+  estimatedNOI: number; // annual
+  estimatedCapRate: number; // percent (e.g. 3.8)
 };
 
 export type PrivateNotes = {
@@ -14,7 +14,7 @@ export type PrivateNotes = {
 };
 
 export type PDFLayout = {
-  section: string;            // used for grouping pages
+  section: string; // used for grouping pages
   avoidPageBreak: boolean;
 };
 
@@ -78,6 +78,10 @@ export type Portfolio = {
 const mapbox = (lat: number, lng: number, zoom: number) =>
   `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/pin-s+7c3aed(${lng},${lat})/${lng},${lat},${zoom}/600x360@2x?access_token=YOUR_MAPBOX_TOKEN`;
 
+/** Safe Zillow search URL builder (won't 404 if zpid changes) */
+const zillowSearch = (fullAddress: string) =>
+  `https://www.zillow.com/homes/${encodeURIComponent(fullAddress)}_rb/`;
+
 /* =========================================================
    PORTFOLIO DATA — ALL 33 HOMES
    ========================================================= */
@@ -105,10 +109,7 @@ export const portfolio: Portfolio = {
         "Exceptional — Austin tech proximity combined with Hill Country exclusivity, lake lifestyle, and wine culture.",
       bestFor:
         "Affluent couples, wine enthusiasts, water-sports families, relationship-focused professionals.",
-      pdf: {
-        section: "Texas Hill Country",
-        avoidPageBreak: true,
-      },
+      pdf: { section: "Texas Hill Country", avoidPageBreak: true },
       properties: [
         {
           id: "lakehurst-loop",
@@ -123,20 +124,13 @@ export const portfolio: Portfolio = {
           annualIncome: { min: 144000, max: 192000 },
           roiNotes:
             "Lakefront Hill Country luxury with limited comparable inventory; pricing power driven by water access and gated community.",
-          capRate: {
-            enabled: false,
-            estimatedNOI: 155000,
-            estimatedCapRate: 2.4,
-          },
+          capRate: { enabled: false, estimatedNOI: 155000, estimatedCapRate: 2.4 },
           isJason: true,
           zillowUrl:
             "https://www.zillow.com/homedetails/19813-Lakehurst-Loop-Spicewood-TX-78669/29497851_zpid/",
           privateNotes: {
             enabled: false,
-            notes: [
-              "Sunset exposure is exceptional",
-              "Feels like a legacy family lake house",
-            ],
+            notes: ["Sunset exposure is exceptional", "Feels like a legacy family lake house"],
           },
         },
         {
@@ -152,17 +146,10 @@ export const portfolio: Portfolio = {
           annualIncome: { min: 54000, max: 78000 },
           roiNotes:
             "Lower entry point Hill Country rental; strong weekend utilization and resale appeal.",
-          capRate: {
-            enabled: false,
-            estimatedNOI: 62000,
-            estimatedCapRate: 4.8,
-          },
+          capRate: { enabled: false, estimatedNOI: 62000, estimatedCapRate: 4.8 },
           zillowUrl:
             "https://www.zillow.com/homedetails/3507-Bee-Creek-Rd-Spicewood-TX-78669/29497687_zpid/",
-          privateNotes: {
-            enabled: false,
-            notes: ["Great overflow option for visiting friends"],
-          },
+          privateNotes: { enabled: false, notes: ["Great overflow option for visiting friends"] },
         },
         {
           id: "swede-springs",
@@ -175,19 +162,10 @@ export const portfolio: Portfolio = {
           sqft: 8186,
           monthlyIncome: { min: 9000, max: 13000 },
           annualIncome: { min: 108000, max: 156000 },
-          roiNotes:
-            "Revenue driven by group size and events; ideal for multi-family stays and retreats.",
-          capRate: {
-            enabled: false,
-            estimatedNOI: 120000,
-            estimatedCapRate: 2.9,
-          },
-          zillowUrl:
-            "https://www.zillow.com/homedetails/74-Swede-Springs-Boerne-TX-78006/53112345_zpid/",
-          privateNotes: {
-            enabled: false,
-            notes: ["Feels like a wedding venue in disguise"],
-          },
+          roiNotes: "Revenue driven by group size and events; ideal for multi-family stays and retreats.",
+          capRate: { enabled: false, estimatedNOI: 120000, estimatedCapRate: 2.9 },
+          zillowUrl: zillowSearch("74 Swede Springs Boerne TX 78006"),
+          privateNotes: { enabled: false, notes: ["Feels like a wedding venue in disguise"] },
         },
       ],
     },
@@ -207,14 +185,9 @@ export const portfolio: Portfolio = {
         zoom: 11,
         staticUrl: mapbox(30.2936, -97.8258, 11),
       },
-      datingScene:
-        "Excellent — Constant influx of tech talent and entrepreneurial energy.",
-      bestFor:
-        "Founders, executives, creative professionals, power couples.",
-      pdf: {
-        section: "Austin Metro",
-        avoidPageBreak: true,
-      },
+      datingScene: "Excellent — Constant influx of tech talent and entrepreneurial energy.",
+      bestFor: "Founders, executives, creative professionals, power couples.",
+      pdf: { section: "Austin Metro", avoidPageBreak: true },
       properties: [
         {
           id: "spirit-lake",
@@ -229,885 +202,722 @@ export const portfolio: Portfolio = {
           annualIncome: { min: 180000, max: 240000 },
           roiNotes:
             "Executive-level rental demand in West Lake Hills with strong appreciation tailwinds.",
-          capRate: {
-            enabled: false,
-            estimatedNOI: 200000,
-            estimatedCapRate: 3.0,
-          },
+          capRate: { enabled: false, estimatedNOI: 200000, estimatedCapRate: 3.0 },
           zillowUrl:
             "https://www.zillow.com/homedetails/3806-Spirit-Lake-Cv-Austin-TX-78746/29388987_zpid/",
-          privateNotes: {
-            enabled: false,
-            notes: ["Feels very 'Austin power couple'"],
-          },
+          privateNotes: { enabled: false, notes: ["Feels very 'Austin power couple'"] },
         },
       ],
-    },{
-  id: "silverthorne",
-  name: "Silverthorne / Summit County, CO",
-  region: "MOUNTAIN RESORT",
-  roses: 2,
-  map: {
-    provider: "mapbox",
-    lat: 39.6311,
-    lng: -106.0744,
-    zoom: 11,
-    staticUrl: mapbox(39.6311, -106.0744, 11),
-  },
-  datingScene:
-    "Good — Quality outdoor-focused dating pool; fewer people, stronger alignment.",
-  bestFor:
-    "Adventure couples, remote workers, fly-fishing families, privacy-seeking professionals.",
-  pdf: {
-    section: "Colorado Mountain Resorts",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "johnson-rd",
-      address: "2244 Johnson Rd",
-      city: "Silverthorne",
-      state: "CO",
-      price: 3595000,
-      beds: 5,
-      baths: 5,
-      sqft: 6346,
-      monthlyIncome: { min: 12000, max: 16000 },
-      annualIncome: { min: 144000, max: 192000 },
-      roiNotes:
-        "Consistent four-season rental demand driven by Lake Dillon access, fishing culture, and limited luxury inventory.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 160000,
-        estimatedCapRate: 4.4,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/2244-Johnson-Rd-Silverthorne-CO-80498/14011524_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Fly-fishing culture is a huge plus",
-          "Feels calm and restorative",
-        ],
-      },
     },
-    {
-      id: "triple-creek",
-      address: "1800 Triple Creek Ranch Rd",
-      city: "Silverthorne",
-      state: "CO",
-      price: 24500000,
-      beds: 6,
-      baths: 7,
-      sqft: 7284,
-      monthlyIncome: { min: 25000, max: 35000 },
-      annualIncome: { min: 300000, max: 420000 },
-      roiNotes:
-        "Ultra-luxury estate appealing to UHNW families and international clientele; pricing power driven by privacy and scale.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 350000,
-        estimatedCapRate: 1.4,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/1800-Triple-Creek-Ranch-Rd-Silverthorne-CO-80498/2079985635_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "This is about legacy and privacy, not yield",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "breckenridge",
-  name: "Breckenridge, CO",
-  region: "SKI RESORT",
-  roses: 3,
-  map: {
-    provider: "mapbox",
-    lat: 39.4817,
-    lng: -106.0384,
-    zoom: 12,
-    staticUrl: mapbox(39.4817, -106.0384, 12),
-  },
-  datingScene:
-    "Exceptional — Constant rotation of affluent visitors and vibrant après-ski social scene.",
-  bestFor:
-    "Ski-focused couples, entertaining-oriented owners, second-home investors.",
-  pdf: {
-    section: "Colorado Mountain Resorts",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "headlight-dr",
-      address: "320 Headlight Dr",
-      city: "Breckenridge",
-      state: "CO",
-      price: 6995000,
-      beds: 6,
-      baths: 6,
-      sqft: 6552,
-      monthlyIncome: { min: 18000, max: 28000 },
-      annualIncome: { min: 216000, max: 336000 },
-      roiNotes:
-        "Premium Breckenridge positioning supports high seasonal rates and repeat renter loyalty.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 260000,
-        estimatedCapRate: 3.7,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/320-Headlight-Dr-Breckenridge-CO-80424/14015187_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Main Street energy without chaos",
-        ],
-      },
-    },
-    {
-      id: "sallie-barber",
-      address: "250 Sallie Barber Rd",
-      city: "Breckenridge",
-      state: "CO",
-      price: 14499999,
-      beds: 6,
-      baths: 9,
-      sqft: 7444,
-      monthlyIncome: { min: 25000, max: 35000 },
-      annualIncome: { min: 300000, max: 420000 },
-      roiNotes:
-        "Top-tier ski-in/ski-out luxury commanding premium nightly rates in peak season.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 360000,
-        estimatedCapRate: 2.5,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/250-Sallie-Barber-Rd-Breckenridge-CO-80424/14014955_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "This is the social centerpiece property",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "granby-estes",
-  name: "Granby / Estes Park Area, CO",
-  region: "ROCKY MOUNTAIN NATIONAL PARK",
-  roses: 1,
-  map: {
-    provider: "mapbox",
-    lat: 40.0861,
-    lng: -105.9395,
-    zoom: 10,
-    staticUrl: mapbox(40.0861, -105.9395, 10),
-  },
-  datingScene:
-    "Moderate — Quiet, nature-focused dating pool emphasizing quality over quantity.",
-  bestFor:
-    "Nature lovers, hikers, photographers, introvert-friendly families.",
-  pdf: {
-    section: "Northern Colorado Mountains",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "us-hwy-40",
-      address: "52899 US Hwy 40",
-      city: "Granby",
-      state: "CO",
-      price: 5600000,
-      beds: 6,
-      baths: 6,
-      sqft: 7567,
-      monthlyIncome: { min: 8000, max: 12000 },
-      annualIncome: { min: 96000, max: 144000 },
-      roiNotes:
-        "Stable RMNP-adjacent rental demand with strong seasonal tourism and family appeal.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 115000,
-        estimatedCapRate: 2.1,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/52899-US-Highway-40-Granby-CO-80446/14020035_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels like a true mountain lodge",
-        ],
-      },
-    },
-    {
-      id: "csh-county-40",
-      address: "5188 CSH County Rd 40",
-      city: "Granby",
-      state: "CO",
-      price: 7995000,
-      beds: 7,
-      baths: 8,
-      sqft: 9970,
-      monthlyIncome: { min: 14000, max: 19000 },
-      annualIncome: { min: 168000, max: 228000 },
-      roiNotes:
-        "New construction premium with large-group capacity driving higher per-stay revenue.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 185000,
-        estimatedCapRate: 2.3,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/5188-County-Road-40-Granby-CO-80446/2062333844_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Ideal for multi-generational trips",
-        ],
-      },
-    },
-    {
-      id: "deer-ridge",
-      address: "2327 Deer Ridge Dr",
-      city: "Estes Park",
-      state: "CO",
-      price: 3125000,
-      beds: 6,
-      baths: 8,
-      sqft: 8560,
-      monthlyIncome: { min: 10000, max: 14000 },
-      annualIncome: { min: 120000, max: 168000 },
-      roiNotes:
-        "Gateway-to-RMNP location ensures consistent tourist demand and strong shoulder seasons.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 140000,
-        estimatedCapRate: 4.5,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/2327-Deer-Ridge-Dr-Estes-Park-CO-80517/14021309_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Wildlife sightings are frequent",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "denver-north",
-  name: "Denver Metro — North / Northeast",
-  region: "EXECUTIVE / URBAN",
-  roses: 2,
-  map: {
-    provider: "mapbox",
-    lat: 39.8530,
-    lng: -104.7760,
-    zoom: 10,
-    staticUrl: mapbox(39.8530, -104.7760, 10),
-  },
-  datingScene:
-    "Good — Strong professional singles pool with corporate, tech, and finance crossover.",
-  bestFor:
-    "Corporate executives, business leaders, relocation-focused professionals.",
-  pdf: {
-    section: "Denver Metro",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "picadilly",
-      address: "12565 Picadilly Rd",
-      city: "Commerce City",
-      state: "CO",
-      price: 8850000,
-      beds: 6,
-      baths: 13,
-      sqft: 16269,
-      monthlyIncome: { min: 28000, max: 35000 },
-      annualIncome: { min: 336000, max: 420000 },
-      roiNotes:
-        "Executive-grade new construction supporting high nightly rates and corporate demand near DIA.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 380000,
-        estimatedCapRate: 4.3,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/12565-Picadilly-Rd-Commerce-City-CO-80022/2062755586_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels purpose-built for executive hosting",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "loveland-fort-collins",
-  name: "Loveland / Fort Collins Area, CO",
-  region: "NORTHERN COLORADO",
-  roses: 3,
-  map: {
-    provider: "mapbox",
-    lat: 40.5853,
-    lng: -105.0844,
-    zoom: 10,
-    staticUrl: mapbox(40.5853, -105.0844, 10),
-  },
-  datingScene:
-    "Exceptional — Fort Collins ranked #1 singles city in Colorado; youthful, educated, social.",
-  bestFor:
-    "Young professionals, relocating families, wine enthusiasts, remote workers.",
-  pdf: {
-    section: "Northern Colorado",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "soaring-eagle",
-      address: "0 Soaring Eagle Pass",
-      city: "Loveland",
-      state: "CO",
-      price: 2400000,
-      beds: 4,
-      baths: 5,
-      sqft: 5940,
-      monthlyIncome: { min: 6000, max: 8500 },
-      annualIncome: { min: 72000, max: 102000 },
-      roiNotes:
-        "New construction appeal with proximity to Fort Collins employment and social centers.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 85000,
-        estimatedCapRate: 3.5,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/Soaring-Eagle-Pass-Loveland-CO-80538/2061866062_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Strong long-term appreciation potential",
-        ],
-      },
-    },
-    {
-      id: "hwy-287",
-      address: "23930 N Highway 287",
-      city: "Livermore",
-      state: "CO",
-      price: 4500000,
-      beds: 5,
-      baths: 5,
-      sqft: 5500,
-      monthlyIncome: { min: 7000, max: 9500 },
-      annualIncome: { min: 84000, max: 114000 },
-      roiNotes:
-        "Wine country adjacency and RMNP access create premium experiential rental demand.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 98000,
-        estimatedCapRate: 2.2,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/23930-N-Highway-287-Livermore-CO-80536/14014557_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels romantic and secluded without isolation",
-        ],
-      },
-    },
-    {
-      id: "abrams-way",
-      address: "796 Abrams Way",
-      city: "Loveland",
-      state: "CO",
-      price: 3850000,
-      beds: 5,
-      baths: 5,
-      sqft: 6655,
-      monthlyIncome: { min: 8000, max: 11000 },
-      annualIncome: { min: 96000, max: 132000 },
-      roiNotes:
-        "Well-balanced luxury home appealing to families and longer-term renters.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 115000,
-        estimatedCapRate: 3.0,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/796-Abrams-Way-Loveland-CO-80537/14015964_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Very livable day-to-day layout",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "weld-county",
-  name: "Hudson / Bennett / Weld County, CO",
-  region: "RURAL / GROWTH",
-  roses: 1,
-  map: {
-    provider: "mapbox",
-    lat: 40.0560,
-    lng: -104.6520,
-    zoom: 9,
-    staticUrl: mapbox(40.0560, -104.6520, 9),
-  },
-  datingScene:
-    "Moderate — Relationship-focused, rural-leaning community with Denver access.",
-  bestFor:
-    "Growing families, equestrian enthusiasts, land-seeking professionals.",
-  pdf: {
-    section: "Weld County",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "imboden",
-      address: "12550 Imboden Rd",
-      city: "Hudson",
-      state: "CO",
-      price: 2299900,
-      beds: 7,
-      baths: 8,
-      sqft: 9125,
-      monthlyIncome: { min: 6500, max: 8500 },
-      annualIncome: { min: 78000, max: 102000 },
-      roiNotes:
-        "New construction acreage with long-term rental stability rather than short-term yield.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 90000,
-        estimatedCapRate: 3.9,
-      },
-      isJason: true,
-      zillowUrl:
-        "https://www.zillow.com/homedetails/12550-Imboden-Rd-Hudson-CO-80642/2063416230_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels like a future-proof land play",
-        ],
-      },
-    },
-    {
-      id: "e-56th",
-      address: "48155 E 56th Ave",
-      city: "Bennett",
-      state: "CO",
-      price: 1175000,
-      beds: 4,
-      baths: 4,
-      sqft: 5086,
-      monthlyIncome: { min: 3500, max: 5000 },
-      annualIncome: { min: 42000, max: 60000 },
-      roiNotes:
-        "Entry-level rural investment appealing to families priced out of Denver.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 52000,
-        estimatedCapRate: 4.4,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/48155-E-56th-Ave-Bennett-CO-80102/13991077_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Simple, practical, low drama",
-        ],
-      },
-    },
-    {
-      id: "county-road-121",
-      address: "1150 S County Road 121",
-      city: "Bennett",
-      state: "CO",
-      price: 1695000,
-      beds: 6,
-      baths: 5,
-      sqft: 5634,
-      monthlyIncome: { min: 5000, max: 7000 },
-      annualIncome: { min: 60000, max: 84000 },
-      roiNotes:
-        "Large-family rural home with strong long-term tenancy appeal.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 72000,
-        estimatedCapRate: 4.2,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/1150-S-County-Road-121-Bennett-CO-80102/13991204_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Very family-oriented feel",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "longmont",
-  name: "Longmont Area, CO",
-  region: "TECH / CREATIVE",
-  roses: 2,
-  map: {
-    provider: "mapbox",
-    lat: 40.1672,
-    lng: -105.1019,
-    zoom: 11,
-    staticUrl: mapbox(40.1672, -105.1019, 11),
-  },
-  datingScene:
-    "Good — Tech and creative professionals with Boulder adjacency.",
-  bestFor:
-    "Tech workers, creatives, Boulder-adjacent lifestyle seekers.",
-  pdf: {
-    section: "Northern Colorado",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "mineral-rd",
-      address: "10323 Mineral Rd",
-      city: "Longmont",
-      state: "CO",
-      price: 3750000,
-      beds: 4,
-      baths: 6,
-      sqft: 5086,
-      monthlyIncome: { min: 10000, max: 13000 },
-      annualIncome: { min: 120000, max: 156000 },
-      roiNotes:
-        "Premium Longmont positioning with strong tech-worker rental demand and Boulder spillover.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 140000,
-        estimatedCapRate: 3.7,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/10323-Mineral-Rd-Longmont-CO-80504/14017841_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels like Boulder without Boulder pricing",
-        ],
-      },
-    },
-    {
-      id: "county-line",
-      address: "15137 E County Line Rd",
-      city: "Longmont",
-      state: "CO",
-      price: 3600000,
-      beds: 3,
-{
-  id: "castle-rock-franktown",
-  name: "Castle Rock / Franktown Area, CO",
-  region: "SOUTH DENVER SUBURBS",
-  roses: 1,
-  map: {
-    provider: "mapbox",
-    lat: 39.3714,
-    lng: -104.8561,
-    zoom: 10,
-    staticUrl: mapbox(39.3714, -104.8561, 10),
-  },
-  datingScene:
-    "Moderate — Affluent suburban professionals with outdoor-oriented lifestyles.",
-  bestFor:
-    "Executive families, outdoor recreation lovers, country-adjacent living.",
-  pdf: {
-    section: "South Denver Metro",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "lemon-gulch",
-      address: "7273 Lemon Gulch Way",
-      city: "Castle Rock",
-      state: "CO",
-      price: 3500000,
-      beds: 4,
-      baths: 5,
-      sqft: 5884,
-      monthlyIncome: { min: 9000, max: 12000 },
-      annualIncome: { min: 108000, max: 144000 },
-      roiNotes:
-        "Premium Castle Rock community with stable executive-family rental demand.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 120000,
-        estimatedCapRate: 3.4,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/7273-Lemon-Gulch-Way-Castle-Rock-CO-80108/14025412_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels safe, polished, predictable",
-        ],
-      },
-    },
-    {
-      id: "fox-creek",
-      address: "7497 Fox Creek Trail",
-      city: "Franktown",
-      state: "CO",
-      price: 4950000,
-      beds: 5,
-      baths: 5,
-      sqft: 7518,
-      monthlyIncome: { min: 11000, max: 15000 },
-      annualIncome: { min: 132000, max: 180000 },
-      roiNotes:
-        "Large estate appeal with equestrian and country-luxury positioning.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 160000,
-        estimatedCapRate: 3.2,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/7497-Fox-Creek-Trl-Franktown-CO-80116/14025788_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "This is the ‘Colorado dream acreage’ home",
-        ],
-      },
-    },
-  ],
-},
-{
-  id: "boulder-foothills",
-  name: "Boulder & Foothills, CO",
-  region: "ULTRA-AFFLUENT MOUNTAIN",
-  roses: 2,
-  map: {
-    provider: "mapbox",
-    lat: 39.9878,
-    lng: -105.2550,
-    zoom: 10,
-    staticUrl: mapbox(39.9878, -105.2550, 10),
-  },
-  datingScene:
-    "Good to Excellent — Ultra-wealthy Boulder scene blended with established mountain communities.",
-  bestFor:
-    "Ultra-affluent individuals, mountain lifestyle couples, second-home owners.",
-  pdf: {
-    section: "Colorado Foothills",
-    avoidPageBreak: true,
-  },
-  properties: [
-    {
-      id: "jay-rd",
-      address: "6686 Jay Rd",
-      city: "Boulder",
-      state: "CO",
-      price: 19500000,
-      beds: 4,
-      baths: 4,
-      sqft: 7832,
-      monthlyIncome: { min: 22000, max: 30000 },
-      annualIncome: { min: 264000, max: 360000 },
-      roiNotes:
-        "Ultra-luxury Boulder estate benefiting from extreme scarcity and top-tier appreciation.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 300000,
-        estimatedCapRate: 1.5,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/6686-Jay-Rd-Boulder-CO-80301/13187431_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Pure status and legacy asset",
-        ],
-      },
-    },
-    {
-      id: "deer-meadow",
-      address: "5881 Deer Meadow Trail",
-      city: "Golden",
-      state: "CO",
-      price: 5450000,
-      beds: 7,
-      baths: 7,
-      sqft: 15070,
-      monthlyIncome: { min: 13000, max: 18000 },
-      annualIncome: { min: 156000, max: 216000 },
-      roiNotes:
-        "Large-scale foothills retreat with multi-family and event appeal.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 175000,
-        estimatedCapRate: 3.2,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/5881-Deer-Meadow-Trl-Golden-CO-80403/13191706_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Space to host everyone comfortably",
-        ],
-      },
-    },
-    {
-      id: "upper-bear-creek",
-      address: "32453 Upper Bear Creek Rd",
-      city: "Evergreen",
-      state: "CO",
-      price: 3900000,
-      beds: 4,
-      baths: 7,
-      sqft: 10936,
-      monthlyIncome: { min: 10000, max: 14000 },
-      annualIncome: { min: 120000, max: 168000 },
-      roiNotes:
-        "Established Evergreen luxury with strong appeal to long-term mountain residents.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 135000,
-        estimatedCapRate: 3.5,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/32453-Upper-Bear-Creek-Rd-Evergreen-CO-80439/13194611_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Feels very calm and grounded",
-        ],
-      },
-    },
-    {
-      id: "richmond-hill-1",
-      address: "26271 Richmond Hill Rd",
-      city: "Conifer",
-      state: "CO",
-      price: 5999000,
-      beds: 5,
-      baths: 6,
-      sqft: 7706,
-      monthlyIncome: { min: 14000, max: 19000 },
-      annualIncome: { min: 168000, max: 228000 },
-      roiNotes:
-        "Premium Conifer luxury with high-end finishes and strong second-home demand.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 185000,
-        estimatedCapRate: 3.1,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/26271-Richmond-Hill-Rd-Conifer-CO-80433/13195031_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Best of the Richmond Hill trio",
-        ],
-      },
-    },
-    {
-      id: "richmond-hill-2",
-      address: "26269 Richmond Hill Rd",
-      city: "Conifer",
-      state: "CO",
-      price: 2499000,
-      beds: 5,
-      baths: 6,
-      sqft: 7706,
-      monthlyIncome: { min: 8000, max: 11000 },
-      annualIncome: { min: 96000, max: 132000 },
-      roiNotes:
-        "Value-oriented luxury mountain home with strong cost-to-quality ratio.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 105000,
-        estimatedCapRate: 4.2,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/26269-Richmond-Hill-Rd-Conifer-CO-80433/13195029_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Best value option in this cluster",
-        ],
-      },
-    },
-    {
-      id: "richmond-hill-3",
-      address: "26275 Richmond Hill Rd",
-      city: "Conifer",
-      state: "CO",
-      price: 3999000,
-      beds: 5,
-      baths: 6,
-      sqft: 7706,
-      monthlyIncome: { min: 10000, max: 14000 },
-      annualIncome: { min: 120000, max: 168000 },
-      roiNotes:
-        "Balanced luxury offering completing the Richmond Hill micro-community.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 145000,
-        estimatedCapRate: 3.6,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/26275-Richmond-Hill-Rd-Conifer-CO-80433/13195033_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Nice sense of community with the others",
-        ],
-      },
-    },
-    {
-      id: "perry-park",
-      address: "810 N Perry Park Rd",
-      city: "Sedalia",
-      state: "CO",
-      price: 4250000,
-      beds: 6,
-      baths: 5,
-      sqft: 5803,
-      monthlyIncome: { min: 11000, max: 15000 },
-      annualIncome: { min: 132000, max: 180000 },
-      roiNotes:
-        "Foothills luxury with golf-adjacent appeal and strong executive renter demand.",
-      capRate: {
-        enabled: false,
-        estimatedNOI: 155000,
-        estimatedCapRate: 3.6,
-      },
-      zillowUrl:
-        "https://www.zillow.com/homedetails/810-N-Perry-Park-Rd-Sedalia-CO-80135/14029243_zpid/",
-      privateNotes: {
-        enabled: false,
-        notes: [
-          "Very social entertaining potential",
-        ],
-      },
-    },
-  ],
-},
 
+    /* =====================================================
+       GROUP 3 — SILVERTHORNE / SUMMIT COUNTY, CO
+       ===================================================== */
+    {
+      id: "silverthorne",
+      name: "Silverthorne / Summit County, CO",
+      region: "MOUNTAIN RESORT",
+      roses: 2,
+      map: {
+        provider: "mapbox",
+        lat: 39.6311,
+        lng: -106.0744,
+        zoom: 11,
+        staticUrl: mapbox(39.6311, -106.0744, 11),
+      },
+      datingScene: "Good — Quality outdoor-focused dating pool; fewer people, stronger alignment.",
+      bestFor: "Adventure couples, remote workers, fly-fishing families, privacy-seeking professionals.",
+      pdf: { section: "Colorado Mountain Resorts", avoidPageBreak: true },
+      properties: [
+        {
+          id: "johnson-rd",
+          address: "2244 Johnson Rd",
+          city: "Silverthorne",
+          state: "CO",
+          price: 3595000,
+          beds: 5,
+          baths: 5,
+          sqft: 6346,
+          monthlyIncome: { min: 12000, max: 16000 },
+          annualIncome: { min: 144000, max: 192000 },
+          roiNotes:
+            "Consistent four-season rental demand driven by Lake Dillon access, fishing culture, and limited luxury inventory.",
+          capRate: { enabled: false, estimatedNOI: 160000, estimatedCapRate: 4.4 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/2244-Johnson-Rd-Silverthorne-CO-80498/14011524_zpid/",
+          privateNotes: { enabled: false, notes: ["Fly-fishing culture is a huge plus", "Feels calm and restorative"] },
+        },
+        {
+          id: "triple-creek",
+          address: "1800 Triple Creek Ranch Rd",
+          city: "Silverthorne",
+          state: "CO",
+          price: 24500000,
+          beds: 6,
+          baths: 7,
+          sqft: 7284,
+          monthlyIncome: { min: 25000, max: 35000 },
+          annualIncome: { min: 300000, max: 420000 },
+          roiNotes:
+            "Ultra-luxury estate appealing to UHNW families and international clientele; pricing power driven by privacy and scale.",
+          capRate: { enabled: false, estimatedNOI: 350000, estimatedCapRate: 1.4 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/1800-Triple-Creek-Ranch-Rd-Silverthorne-CO-80498/2079985635_zpid/",
+          privateNotes: { enabled: false, notes: ["This is about legacy and privacy, not yield"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 4 — BRECKENRIDGE, CO
+       ===================================================== */
+    {
+      id: "breckenridge",
+      name: "Breckenridge, CO",
+      region: "SKI RESORT",
+      roses: 3,
+      map: {
+        provider: "mapbox",
+        lat: 39.4817,
+        lng: -106.0384,
+        zoom: 12,
+        staticUrl: mapbox(39.4817, -106.0384, 12),
+      },
+      datingScene:
+        "Exceptional — Constant rotation of affluent visitors and vibrant après-ski social scene.",
+      bestFor: "Ski-focused couples, entertaining-oriented owners, second-home investors.",
+      pdf: { section: "Colorado Mountain Resorts", avoidPageBreak: true },
+      properties: [
+        {
+          id: "headlight-dr",
+          address: "320 Headlight Dr",
+          city: "Breckenridge",
+          state: "CO",
+          price: 6995000,
+          beds: 6,
+          baths: 6,
+          sqft: 6552,
+          monthlyIncome: { min: 18000, max: 28000 },
+          annualIncome: { min: 216000, max: 336000 },
+          roiNotes: "Premium Breckenridge positioning supports high seasonal rates and repeat renter loyalty.",
+          capRate: { enabled: false, estimatedNOI: 260000, estimatedCapRate: 3.7 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/320-Headlight-Dr-Breckenridge-CO-80424/14015187_zpid/",
+          privateNotes: { enabled: false, notes: ["Main Street energy without chaos"] },
+        },
+        {
+          id: "sallie-barber",
+          address: "250 Sallie Barber Rd",
+          city: "Breckenridge",
+          state: "CO",
+          price: 14499999,
+          beds: 6,
+          baths: 9,
+          sqft: 7444,
+          monthlyIncome: { min: 25000, max: 35000 },
+          annualIncome: { min: 300000, max: 420000 },
+          roiNotes: "Top-tier ski-in/ski-out luxury commanding premium nightly rates in peak season.",
+          capRate: { enabled: false, estimatedNOI: 360000, estimatedCapRate: 2.5 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/250-Sallie-Barber-Rd-Breckenridge-CO-80424/14014955_zpid/",
+          privateNotes: { enabled: false, notes: ["This is the social centerpiece property"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 5 — GRANBY / ESTES PARK, CO
+       ===================================================== */
+    {
+      id: "granby-estes",
+      name: "Granby / Estes Park Area, CO",
+      region: "ROCKY MOUNTAIN NATIONAL PARK",
+      roses: 1,
+      map: {
+        provider: "mapbox",
+        lat: 40.0861,
+        lng: -105.9395,
+        zoom: 10,
+        staticUrl: mapbox(40.0861, -105.9395, 10),
+      },
+      datingScene: "Moderate — Quiet, nature-focused dating pool emphasizing quality over quantity.",
+      bestFor: "Nature lovers, hikers, photographers, introvert-friendly families.",
+      pdf: { section: "Northern Colorado Mountains", avoidPageBreak: true },
+      properties: [
+        {
+          id: "us-hwy-40",
+          address: "52899 US Hwy 40",
+          city: "Granby",
+          state: "CO",
+          price: 5600000,
+          beds: 6,
+          baths: 6,
+          sqft: 7567,
+          monthlyIncome: { min: 8000, max: 12000 },
+          annualIncome: { min: 96000, max: 144000 },
+          roiNotes: "Stable RMNP-adjacent rental demand with strong seasonal tourism and family appeal.",
+          capRate: { enabled: false, estimatedNOI: 115000, estimatedCapRate: 2.1 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/52899-US-Highway-40-Granby-CO-80446/14020035_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels like a true mountain lodge"] },
+        },
+        {
+          id: "csh-county-40",
+          address: "5188 CSH County Rd 40",
+          city: "Granby",
+          state: "CO",
+          price: 7995000,
+          beds: 7,
+          baths: 8,
+          sqft: 9970,
+          monthlyIncome: { min: 14000, max: 19000 },
+          annualIncome: { min: 168000, max: 228000 },
+          roiNotes: "New construction premium with large-group capacity driving higher per-stay revenue.",
+          capRate: { enabled: false, estimatedNOI: 185000, estimatedCapRate: 2.3 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/5188-County-Road-40-Granby-CO-80446/2062333844_zpid/",
+          privateNotes: { enabled: false, notes: ["Ideal for multi-generational trips"] },
+        },
+        {
+          id: "deer-ridge",
+          address: "2327 Deer Ridge Dr",
+          city: "Estes Park",
+          state: "CO",
+          price: 3125000,
+          beds: 6,
+          baths: 8,
+          sqft: 8560,
+          monthlyIncome: { min: 10000, max: 14000 },
+          annualIncome: { min: 120000, max: 168000 },
+          roiNotes: "Gateway-to-RMNP location ensures consistent tourist demand and strong shoulder seasons.",
+          capRate: { enabled: false, estimatedNOI: 140000, estimatedCapRate: 4.5 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/2327-Deer-Ridge-Dr-Estes-Park-CO-80517/14021309_zpid/",
+          privateNotes: { enabled: false, notes: ["Wildlife sightings are frequent"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 6 — DENVER METRO NORTH / NORTHEAST
+       ===================================================== */
+    {
+      id: "denver-north",
+      name: "Denver Metro — North / Northeast",
+      region: "EXECUTIVE / URBAN",
+      roses: 2,
+      map: {
+        provider: "mapbox",
+        lat: 39.853,
+        lng: -104.776,
+        zoom: 10,
+        staticUrl: mapbox(39.853, -104.776, 10),
+      },
+      datingScene:
+        "Good — Strong professional singles pool with corporate, tech, and finance crossover.",
+      bestFor: "Corporate executives, business leaders, relocation-focused professionals.",
+      pdf: { section: "Denver Metro", avoidPageBreak: true },
+      properties: [
+        {
+          id: "picadilly",
+          address: "12565 Picadilly Rd",
+          city: "Commerce City",
+          state: "CO",
+          price: 8850000,
+          beds: 6,
+          baths: 13,
+          sqft: 16269,
+          monthlyIncome: { min: 28000, max: 35000 },
+          annualIncome: { min: 336000, max: 420000 },
+          roiNotes: "Executive-grade new construction supporting high nightly rates and corporate demand near DIA.",
+          capRate: { enabled: false, estimatedNOI: 380000, estimatedCapRate: 4.3 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/12565-Picadilly-Rd-Commerce-City-CO-80022/2062755586_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels purpose-built for executive hosting"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 7 — LOVELAND / FORT COLLINS, CO
+       ===================================================== */
+    {
+      id: "loveland-fort-collins",
+      name: "Loveland / Fort Collins Area, CO",
+      region: "NORTHERN COLORADO",
+      roses: 3,
+      map: {
+        provider: "mapbox",
+        lat: 40.5853,
+        lng: -105.0844,
+        zoom: 10,
+        staticUrl: mapbox(40.5853, -105.0844, 10),
+      },
+      datingScene:
+        "Exceptional — Fort Collins ranked #1 singles city in Colorado; youthful, educated, social.",
+      bestFor: "Young professionals, relocating families, wine enthusiasts, remote workers.",
+      pdf: { section: "Northern Colorado", avoidPageBreak: true },
+      properties: [
+        {
+          id: "soaring-eagle",
+          address: "0 Soaring Eagle Pass",
+          city: "Loveland",
+          state: "CO",
+          price: 2400000,
+          beds: 4,
+          baths: 5,
+          sqft: 5940,
+          monthlyIncome: { min: 6000, max: 8500 },
+          annualIncome: { min: 72000, max: 102000 },
+          roiNotes: "New construction appeal with proximity to Fort Collins employment and social centers.",
+          capRate: { enabled: false, estimatedNOI: 85000, estimatedCapRate: 3.5 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/Soaring-Eagle-Pass-Loveland-CO-80538/2061866062_zpid/",
+          privateNotes: { enabled: false, notes: ["Strong long-term appreciation potential"] },
+        },
+        {
+          id: "hwy-287",
+          address: "23930 N Highway 287",
+          city: "Livermore",
+          state: "CO",
+          price: 4500000,
+          beds: 5,
+          baths: 5,
+          sqft: 5500,
+          monthlyIncome: { min: 7000, max: 9500 },
+          annualIncome: { min: 84000, max: 114000 },
+          roiNotes: "Wine country adjacency and RMNP access create premium experiential rental demand.",
+          capRate: { enabled: false, estimatedNOI: 98000, estimatedCapRate: 2.2 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/23930-N-Highway-287-Livermore-CO-80536/14014557_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels romantic and secluded without isolation"] },
+        },
+        {
+          id: "abrams-way",
+          address: "796 Abrams Way",
+          city: "Loveland",
+          state: "CO",
+          price: 3850000,
+          beds: 5,
+          baths: 5,
+          sqft: 6655,
+          monthlyIncome: { min: 8000, max: 11000 },
+          annualIncome: { min: 96000, max: 132000 },
+          roiNotes: "Well-balanced luxury home appealing to families and longer-term renters.",
+          capRate: { enabled: false, estimatedNOI: 115000, estimatedCapRate: 3.0 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/796-Abrams-Way-Loveland-CO-80537/14015964_zpid/",
+          privateNotes: { enabled: false, notes: ["Very livable day-to-day layout"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 8 — HUDSON / BENNETT / WELD COUNTY, CO
+       (Expanded to include the missing homes from your original 33 list)
+       ===================================================== */
+    {
+      id: "weld-county",
+      name: "Hudson / Bennett / Weld County, CO",
+      region: "RURAL / GROWTH",
+      roses: 1,
+      map: {
+        provider: "mapbox",
+        lat: 40.056,
+        lng: -104.652,
+        zoom: 9,
+        staticUrl: mapbox(40.056, -104.652, 9),
+      },
+      datingScene: "Moderate — Relationship-focused, rural-leaning community with Denver access.",
+      bestFor: "Growing families, equestrian enthusiasts, land-seeking professionals.",
+      pdf: { section: "Weld County", avoidPageBreak: true },
+      properties: [
+        {
+          id: "imboden",
+          address: "12550 Imboden Rd",
+          city: "Hudson",
+          state: "CO",
+          price: 2299900,
+          beds: 7,
+          baths: 8,
+          sqft: 9125,
+          monthlyIncome: { min: 6500, max: 8500 },
+          annualIncome: { min: 78000, max: 102000 },
+          roiNotes: "New construction acreage with long-term rental stability rather than short-term yield.",
+          capRate: { enabled: false, estimatedNOI: 90000, estimatedCapRate: 3.9 },
+          isJason: true,
+          zillowUrl:
+            "https://www.zillow.com/homedetails/12550-Imboden-Rd-Hudson-CO-80642/2063416230_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels like a future-proof land play"] },
+        },
+        {
+          id: "e-56th",
+          address: "48155 E 56th Ave",
+          city: "Bennett",
+          state: "CO",
+          price: 1175000,
+          beds: 4,
+          baths: 4,
+          sqft: 5086,
+          monthlyIncome: { min: 3500, max: 5000 },
+          annualIncome: { min: 42000, max: 60000 },
+          roiNotes: "Entry-level rural investment appealing to families priced out of Denver.",
+          capRate: { enabled: false, estimatedNOI: 52000, estimatedCapRate: 4.4 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/48155-E-56th-Ave-Bennett-CO-80102/13991077_zpid/",
+          privateNotes: { enabled: false, notes: ["Simple, practical, low drama"] },
+        },
+        {
+          id: "county-road-121",
+          address: "1150 S County Road 121",
+          city: "Bennett",
+          state: "CO",
+          price: 1695000,
+          beds: 6,
+          baths: 5,
+          sqft: 5634,
+          monthlyIncome: { min: 5000, max: 7000 },
+          annualIncome: { min: 60000, max: 84000 },
+          roiNotes: "Large-family rural home with strong long-term tenancy appeal.",
+          capRate: { enabled: false, estimatedNOI: 72000, estimatedCapRate: 4.2 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/1150-S-County-Road-121-Bennett-CO-80102/13991204_zpid/",
+          privateNotes: { enabled: false, notes: ["Very family-oriented feel"] },
+        },
+
+        /* Missing #19 from your list */
+        {
+          id: "maplewood-place",
+          address: "50950 E Maplewood Pl",
+          city: "Bennett",
+          state: "CO",
+          price: 1400000,
+          beds: 4,
+          baths: 4,
+          sqft: 5756,
+          monthlyIncome: { min: 4000, max: 6000 },
+          annualIncome: { min: 48000, max: 72000 },
+          roiNotes: "Growth-market listing; best as a long-term hold with optional STR upside later.",
+          capRate: { enabled: false, estimatedNOI: 60000, estimatedCapRate: 4.3 },
+          zillowUrl: zillowSearch("50950 E Maplewood Pl Bennett CO 80102"),
+          privateNotes: { enabled: false, notes: ["Good 'upside if the area grows' option"] },
+        },
+
+        /* Missing #21 from your list */
+        {
+          id: "county-road-37",
+          address: "11881 County Road 37",
+          city: "Weld",
+          state: "CO",
+          price: 1675000,
+          beds: 5,
+          baths: 6,
+          sqft: 6000,
+          monthlyIncome: { min: 5000, max: 7500 },
+          annualIncome: { min: 60000, max: 90000 },
+          roiNotes: "Acreage + lifestyle value; strong appeal to equestrian / land-focused tenants.",
+          capRate: { enabled: false, estimatedNOI: 78000, estimatedCapRate: 4.7 },
+          zillowUrl: zillowSearch("11881 County Road 37 Weld CO 80621"),
+          privateNotes: { enabled: false, notes: ["Lifestyle-driven, not pure yield"] },
+        },
+
+        /* Missing #22 from your list */
+        {
+          id: "county-road-74-windsor",
+          address: "8236 County Road 74",
+          city: "Windsor",
+          state: "CO",
+          price: 3475000,
+          beds: 6,
+          baths: 7,
+          sqft: 9595,
+          monthlyIncome: { min: 8000, max: 11000 },
+          annualIncome: { min: 96000, max: 132000 },
+          roiNotes: "Premium rural-luxury pocket; strong family appeal with event/hosting flexibility.",
+          capRate: { enabled: false, estimatedNOI: 120000, estimatedCapRate: 3.5 },
+          zillowUrl: zillowSearch("8236 County Road 74 Windsor CO 80550"),
+          privateNotes: { enabled: false, notes: ["Big hosting energy"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 9 — LONGMONT, CO  (FIXED + COMPLETED)
+       ===================================================== */
+    {
+      id: "longmont",
+      name: "Longmont Area, CO",
+      region: "TECH / CREATIVE",
+      roses: 2,
+      map: {
+        provider: "mapbox",
+        lat: 40.1672,
+        lng: -105.1019,
+        zoom: 11,
+        staticUrl: mapbox(40.1672, -105.1019, 11),
+      },
+      datingScene: "Good — Tech and creative professionals with Boulder adjacency.",
+      bestFor: "Tech workers, creatives, Boulder-adjacent lifestyle seekers.",
+      pdf: { section: "Northern Colorado", avoidPageBreak: true },
+      properties: [
+        {
+          id: "mineral-rd",
+          address: "10323 Mineral Rd",
+          city: "Longmont",
+          state: "CO",
+          price: 3750000,
+          beds: 4,
+          baths: 6,
+          sqft: 5086,
+          monthlyIncome: { min: 10000, max: 13000 },
+          annualIncome: { min: 120000, max: 156000 },
+          roiNotes:
+            "Premium Longmont positioning with strong tech-worker rental demand and Boulder spillover.",
+          capRate: { enabled: false, estimatedNOI: 140000, estimatedCapRate: 3.7 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/10323-Mineral-Rd-Longmont-CO-80504/14017841_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels like Boulder without Boulder pricing"] },
+        },
+        {
+          id: "county-line",
+          address: "15137 E County Line Rd",
+          city: "Longmont",
+          state: "CO",
+          price: 3600000,
+          beds: 3,
+          baths: 4,
+          sqft: 5184,
+          monthlyIncome: { min: 9500, max: 12500 },
+          annualIncome: { min: 114000, max: 150000 },
+          roiNotes:
+            "Luxury finishes + land positioning; solid demand from Boulder-adjacent professionals.",
+          capRate: { enabled: false, estimatedNOI: 135000, estimatedCapRate: 3.8 },
+          zillowUrl: zillowSearch("15137 E County Line Rd Longmont CO 80504"),
+          privateNotes: { enabled: false, notes: ["Strong 'quiet luxury' vibes"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 10 — CASTLE ROCK / FRANKTOWN, CO
+       ===================================================== */
+    {
+      id: "castle-rock-franktown",
+      name: "Castle Rock / Franktown Area, CO",
+      region: "SOUTH DENVER SUBURBS",
+      roses: 1,
+      map: {
+        provider: "mapbox",
+        lat: 39.3714,
+        lng: -104.8561,
+        zoom: 10,
+        staticUrl: mapbox(39.3714, -104.8561, 10),
+      },
+      datingScene: "Moderate — Affluent suburban professionals with outdoor-oriented lifestyles.",
+      bestFor: "Executive families, outdoor recreation lovers, country-adjacent living.",
+      pdf: { section: "South Denver Metro", avoidPageBreak: true },
+      properties: [
+        {
+          id: "lemon-gulch",
+          address: "7273 Lemon Gulch Way",
+          city: "Castle Rock",
+          state: "CO",
+          price: 3500000,
+          beds: 4,
+          baths: 5,
+          sqft: 5884,
+          monthlyIncome: { min: 9000, max: 12000 },
+          annualIncome: { min: 108000, max: 144000 },
+          roiNotes: "Premium Castle Rock community with stable executive-family rental demand.",
+          capRate: { enabled: false, estimatedNOI: 120000, estimatedCapRate: 3.4 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/7273-Lemon-Gulch-Way-Castle-Rock-CO-80108/14025412_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels safe, polished, predictable"] },
+        },
+        {
+          id: "fox-creek",
+          address: "7497 Fox Creek Trl",
+          city: "Franktown",
+          state: "CO",
+          price: 4950000,
+          beds: 5,
+          baths: 5,
+          sqft: 7518,
+          monthlyIncome: { min: 11000, max: 15000 },
+          annualIncome: { min: 132000, max: 180000 },
+          roiNotes: "Large estate appeal with equestrian and country-luxury positioning.",
+          capRate: { enabled: false, estimatedNOI: 160000, estimatedCapRate: 3.2 },
+          zillowUrl: zillowSearch("7497 Fox Creek Trl Franktown CO 80116"),
+          privateNotes: { enabled: false, notes: ["This is the ‘Colorado dream acreage’ home"] },
+        },
+      ],
+    },
+
+    /* =====================================================
+       GROUP 11 — BOULDER & FOOTHILLS, CO
+       ===================================================== */
+    {
+      id: "boulder-foothills",
+      name: "Boulder & Foothills, CO",
+      region: "ULTRA-AFFLUENT MOUNTAIN",
+      roses: 2,
+      map: {
+        provider: "mapbox",
+        lat: 39.9878,
+        lng: -105.255,
+        zoom: 10,
+        staticUrl: mapbox(39.9878, -105.255, 10),
+      },
+      datingScene:
+        "Good to Excellent — Ultra-wealthy Boulder scene blended with established mountain communities.",
+      bestFor: "Ultra-affluent individuals, mountain lifestyle couples, second-home owners.",
+      pdf: { section: "Colorado Foothills", avoidPageBreak: true },
+      properties: [
+        {
+          id: "jay-rd",
+          address: "6686 Jay Rd",
+          city: "Boulder",
+          state: "CO",
+          price: 19500000,
+          beds: 4,
+          baths: 4,
+          sqft: 7832,
+          monthlyIncome: { min: 22000, max: 30000 },
+          annualIncome: { min: 264000, max: 360000 },
+          roiNotes: "Ultra-luxury Boulder estate benefiting from extreme scarcity and top-tier appreciation.",
+          capRate: { enabled: false, estimatedNOI: 300000, estimatedCapRate: 1.5 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/6686-Jay-Rd-Boulder-CO-80301/13187431_zpid/",
+          privateNotes: { enabled: false, notes: ["Pure status and legacy asset"] },
+        },
+        {
+          id: "deer-meadow",
+          address: "5881 Deer Meadow Trl",
+          city: "Golden",
+          state: "CO",
+          price: 5450000,
+          beds: 7,
+          baths: 7,
+          sqft: 15070,
+          monthlyIncome: { min: 13000, max: 18000 },
+          annualIncome: { min: 156000, max: 216000 },
+          roiNotes: "Large-scale foothills retreat with multi-family and event appeal.",
+          capRate: { enabled: false, estimatedNOI: 175000, estimatedCapRate: 3.2 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/5881-Deer-Meadow-Trl-Golden-CO-80403/13191706_zpid/",
+          privateNotes: { enabled: false, notes: ["Space to host everyone comfortably"] },
+        },
+        {
+          id: "upper-bear-creek",
+          address: "32453 Upper Bear Creek Rd",
+          city: "Evergreen",
+          state: "CO",
+          price: 3900000,
+          beds: 4,
+          baths: 7,
+          sqft: 10936,
+          monthlyIncome: { min: 10000, max: 14000 },
+          annualIncome: { min: 120000, max: 168000 },
+          roiNotes: "Established Evergreen luxury with strong appeal to long-term mountain residents.",
+          capRate: { enabled: false, estimatedNOI: 135000, estimatedCapRate: 3.5 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/32453-Upper-Bear-Creek-Rd-Evergreen-CO-80439/13194611_zpid/",
+          privateNotes: { enabled: false, notes: ["Feels very calm and grounded"] },
+        },
+
+        /* Missing Morrison home from your original list */
+        {
+          id: "doubleheader-ranch",
+          address: "8537 S Doubleheader Ranch Rd",
+          city: "Morrison",
+          state: "CO",
+          price: 2500000,
+          beds: 8,
+          baths: 7,
+          sqft: 5881,
+          monthlyIncome: { min: 7000, max: 10000 },
+          annualIncome: { min: 84000, max: 120000 },
+          roiNotes: "Foothills ranch lifestyle with flexible capacity; great for multi-family gatherings.",
+          capRate: { enabled: false, estimatedNOI: 95000, estimatedCapRate: 3.8 },
+          zillowUrl: zillowSearch("8537 S Doubleheader Ranch Rd Morrison CO 80465"),
+          privateNotes: { enabled: false, notes: ["Big family reunions + trail access"] },
+        },
+
+        {
+          id: "richmond-hill-1",
+          address: "26271 Richmond Hill Rd",
+          city: "Conifer",
+          state: "CO",
+          price: 5999000,
+          beds: 5,
+          baths: 6,
+          sqft: 7706,
+          monthlyIncome: { min: 14000, max: 19000 },
+          annualIncome: { min: 168000, max: 228000 },
+          roiNotes: "Premium Conifer luxury with high-end finishes and strong second-home demand.",
+          capRate: { enabled: false, estimatedNOI: 185000, estimatedCapRate: 3.1 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/26271-Richmond-Hill-Rd-Conifer-CO-80433/13195031_zpid/",
+          privateNotes: { enabled: false, notes: ["Best of the Richmond Hill trio"] },
+        },
+        {
+          id: "richmond-hill-2",
+          address: "26269 Richmond Hill Rd",
+          city: "Conifer",
+          state: "CO",
+          price: 2499000,
+          beds: 5,
+          baths: 6,
+          sqft: 7706,
+          monthlyIncome: { min: 8000, max: 11000 },
+          annualIncome: { min: 96000, max: 132000 },
+          roiNotes: "Value-oriented luxury mountain home with strong cost-to-quality ratio.",
+          capRate: { enabled: false, estimatedNOI: 105000, estimatedCapRate: 4.2 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/26269-Richmond-Hill-Rd-Conifer-CO-80433/13195029_zpid/",
+          privateNotes: { enabled: false, notes: ["Best value option in this cluster"] },
+        },
+        {
+          id: "richmond-hill-3",
+          address: "26275 Richmond Hill Rd",
+          city: "Conifer",
+          state: "CO",
+          price: 3999000,
+          beds: 5,
+          baths: 6,
+          sqft: 7706,
+          monthlyIncome: { min: 10000, max: 14000 },
+          annualIncome: { min: 120000, max: 168000 },
+          roiNotes: "Balanced luxury offering completing the Richmond Hill micro-community.",
+          capRate: { enabled: false, estimatedNOI: 145000, estimatedCapRate: 3.6 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/26275-Richmond-Hill-Rd-Conifer-CO-80433/13195033_zpid/",
+          privateNotes: { enabled: false, notes: ["Nice sense of community with the others"] },
+        },
+        {
+          id: "perry-park",
+          address: "810 N Perry Park Rd",
+          city: "Sedalia",
+          state: "CO",
+          price: 4250000,
+          beds: 6,
+          baths: 5,
+          sqft: 5803,
+          monthlyIncome: { min: 11000, max: 15000 },
+          annualIncome: { min: 132000, max: 180000 },
+          roiNotes: "Foothills luxury with golf-adjacent appeal and strong executive renter demand.",
+          capRate: { enabled: false, estimatedNOI: 155000, estimatedCapRate: 3.6 },
+          zillowUrl:
+            "https://www.zillow.com/homedetails/810-N-Perry-Park-Rd-Sedalia-CO-80135/14029243_zpid/",
+          privateNotes: { enabled: false, notes: ["Very social entertaining potential"] },
+        },
+      ],
+    },
+  ],
+};

@@ -1,356 +1,705 @@
 // src/PropertyPortfolio.jsx
-import React from 'react';
-import './index.css';
+import React, { useMemo, useState } from "react";
+import "./App.css";
+import { portfolio } from "./data/Portfolio";
 
-const portfolio = {
-  title: 'Premium Property Portfolio',
-  subtitle: '33 Luxury Properties Across Texas & Colorado',
-  totalValue: '$241.5M',
-  monthlyIncomeRange: '$435K–$620K',
-  annualIncomeRange: '$5.2M–$7.4M',
+/**
+ * PropertyPortfolio.jsx
+ * - Reads ALL data from src/data/Portfolio.ts
+ * - No totals are calculated or displayed (each home is for someone else)
+ * - Tasteful search + filters
+ * - Favorites/voting (localStorage)
+ * - Family notes toggle (viewer-controlled)
+ * - Conversation mode (adds prompts + “talk about it” UI)
+ * - Print/PDF button (window.print) + uses your print.css if you have it linked in index.html
+ */
+
+/* -----------------------------
+   Helpers
+----------------------------- */
+const money = (n) =>
+  typeof n === "number"
+    ? n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+    : "";
+
+const fmtRange = (min, max) => `${money(min)} – ${money(max)}`;
+
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+const roseLabel = (count) => {
+  const c = clamp(Number(count || 0), 0, 4);
+  return "🌹".repeat(c);
 };
 
-const markets = [
-  {
-    id: 'spicewood',
-    name: 'Spicewood/Boerne Area, TX',
-    hearts: 4,
-    tag: 'HILL COUNTRY',
-    totalValue: '$12,049,000',
-    propertyCount: 3,
-    monthlyRange: '$25,500–$35,500',
-    annualRange: '$306,000–$426,000',
-    datingScene:
-      'EXCEPTIONAL – Best combined dating pool due to Austin proximity + Hill Country exclusivity + water lifestyle.',
-    bestFor:
-      'Active, affluent couples and families; wine enthusiasts; water sports families.',
-    properties: [
-      {
-        id: 1,
-        label: 'JASON’S',
-        address: '19813 & 19817 Lakehurst Loop, Spicewood, TX 78669',
-        beds: 4,
-        baths: 4,
-        sqft: '4,000',
-        price: '$6,550,000',
-        monthlyRange: '$12,000–$16,000',
-        annualRange: '$144,000–$192,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/19813-Lakehurst-Loop-Spicewood-TX-78669/12345678_zpid/',
-      },
-      {
-        id: 2,
-        address: '3507 Bee Creek Rd, Spicewood, TX 78669',
-        beds: 3,
-        baths: 3,
-        sqft: '3,777',
-        price: '$1,299,000',
-        monthlyRange: '$4,500–$6,500',
-        annualRange: '$54,000–$78,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/3507-Bee-Creek-Rd-Spicewood-TX-78669/12345679_zpid/',
-      },
-      {
-        id: 3,
-        address: 'TBD Third Waterfront Estate, Spicewood, TX 78669',
-        beds: 5,
-        baths: 5,
-        sqft: '5,000',
-        price: '$4,200,000',
-        monthlyRange: '$9,000–$13,000',
-        annualRange: '$108,000–$156,000',
-        zillowUrl: 'https://www.zillow.com/',
-      },
-    ],
-  },
-  {
-    id: 'austin',
-    name: 'Austin Area, TX',
-    hearts: 3,
-    tag: 'TECH HUB',
-    totalValue: '$6,750,000',
-    propertyCount: 1,
-    monthlyRange: '$15,000–$20,000',
-    annualRange: '$180,000–$240,000',
-    datingScene:
-      "EXCELLENT – Direct access to Austin's tech millionaire boom.",
-    bestFor:
-      'Tech professionals, entrepreneurs, creative types, young ambitious couples.',
-    properties: [
-      {
-        id: 4,
-        address: '3806 Spirit Lake Cv, Austin, TX 78746',
-        beds: 7,
-        baths: 10,
-        sqft: '9,275',
-        price: '$6,750,000',
-        monthlyRange: '$15,000–$20,000',
-        annualRange: '$180,000–$240,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/3806-Spirit-Lake-Cv-Austin-TX-78746/12345680_zpid/',
-      },
-    ],
-  },
-  {
-    id: 'silverthorne',
-    name: 'Silverthorne/Summit County, CO',
-    hearts: 2,
-    tag: 'MOUNTAIN RESORT',
-    totalValue: '$28,095,000',
-    propertyCount: 2,
-    monthlyRange: '$43,000–$63,000',
-    annualRange: '$516,000–$756,000',
-    datingScene:
-      'EXCEPTIONAL – Highest dating opportunity concentration in any non‑Texas market.',
-    bestFor:
-      'Ski‑focused couples, active professionals, entertaining‑focused individuals.',
-    properties: [
-      {
-        id: 5,
-        label: "JASON'S",
-        address: '320 Headlight Dr, Breckenridge, CO 80424',
-        beds: 6,
-        baths: 6,
-        sqft: '6,552',
-        price: '$6,995,000',
-        monthlyRange: '$18,000–$28,000',
-        annualRange: '$216,000–$336,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/320-Headlight-Dr-Breckenridge-CO-80424/12345681_zpid/',
-      },
-      {
-        id: 6,
-        label: "JASON'S",
-        address: '250 Sallie Barber Rd, Breckenridge, CO 80424',
-        beds: 6,
-        baths: 9,
-        sqft: '7,444',
-        price: '$14,499,999',
-        monthlyRange: '$25,000–$35,000',
-        annualRange: '$300,000–$420,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/250-Sallie-Barber-Rd-Breckenridge-CO-80424/12345682_zpid/',
-      },
-    ],
-  },
-  {
-    id: 'loveland',
-    name: 'Loveland/Fort Collins Area, CO',
-    hearts: 3,
-    tag: 'NORTHERN COLORADO',
-    totalValue: '$10,750,000',
-    propertyCount: 3,
-    monthlyRange: '$21,000–$29,000',
-    annualRange: '$252,000–$348,000',
-    datingScene:
-      'EXCELLENT – Best established singles city in Colorado (Fort Collins #1 ranked).',
-    bestFor:
-      'Young professionals, relocating families, wine enthusiasts, remote workers.',
-    properties: [
-      {
-        id: 7,
-        label: "JASON'S",
-        address: '0 Soaring Eagle Pass, Loveland, CO 80538',
-        beds: 4,
-        baths: 5,
-        sqft: '5,940',
-        price: '$2,400,000',
-        monthlyRange: '$6,000–$8,500',
-        annualRange: '$72,000–$102,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/0-Soaring-Eagle-Pass-Loveland-CO-80538/12345683_zpid/',
-      },
-      {
-        id: 8,
-        label: "JASON'S",
-        address: '23930 N Highway 287, Livermore, CO 80536',
-        beds: 5,
-        baths: 5,
-        sqft: '5,500',
-        price: '$4,500,000',
-        monthlyRange: '$7,000–$9,500',
-        annualRange: '$84,000–$114,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/23930-N-Highway-287-Livermore-CO-80536/12345684_zpid/',
-      },
-      {
-        id: 9,
-        address: '796 Abrams Way, Loveland, CO 80537',
-        beds: 4,
-        baths: 4,
-        sqft: '4,200',
-        price: '$3,850,000',
-        monthlyRange: '$8,000–$11,000',
-        annualRange: '$96,000–$132,000',
-        zillowUrl:
-          'https://www.zillow.com/homedetails/796-Abrams-Way-Loveland-CO-80537/12345685_zpid/',
-      },
-    ],
-  },
-];
+// localStorage helpers
+const LS_KEYS = {
+  dark: "ppp.dark",
+  favorites: "ppp.favorites",
+  votes: "ppp.votes",
+  notesOn: "ppp.notesOn",
+  convoOn: "ppp.convoOn",
+  filters: "ppp.filters",
+};
 
-const HeartRow = ({ count }) => (
-  <span aria-label="favorite market">
-    {' '.repeat(count)
-      .split('')
-      .map((_, i) => '❤️')
-      .join(' ')}
-  </span>
-);
+function readJSON(key, fallback) {
+  try {
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
-const StatCard = ({ icon, label, value, gradient }) => (
-  <div
-    className="ppp-stat-card"
-    style={{ background: gradient }}
-  >
-    <div className="ppp-stat-label">
-      {icon && <span className="ppp-stat-icon">{icon}</span>}
-      <span>{label}</span>
+function writeJSON(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // ignore
+  }
+}
+
+/* -----------------------------
+   UI bits
+----------------------------- */
+function Chip({ children, tone = "neutral" }) {
+  return <span className={`ppp-chip ppp-chip--${tone}`}>{children}</span>;
+}
+
+function IconButton({ onClick, children, title, pressed, className = "" }) {
+  return (
+    <button
+      className={`ppp-icon-btn ${pressed ? "is-pressed" : ""} ${className}`}
+      onClick={onClick}
+      title={title}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+}
+
+function StatPill({ label, value, tone = "neutral" }) {
+  return (
+    <div className={`ppp-pill ppp-pill--${tone}`}>
+      <div className="ppp-pill__label">{label}</div>
+      <div className="ppp-pill__value">{value}</div>
     </div>
-    <div className="ppp-stat-value">{value}</div>
-  </div>
-);
+  );
+}
 
-const PropertyRow = ({ p }) => (
-  <a
-    className="ppp-property-row"
-    href={p.zillowUrl}
-    target="_blank"
-    rel="noreferrer"
-  >
-    <div className="ppp-property-main">
-      <div className="ppp-property-address">
-        {p.address}
-        {p.label && <span className="ppp-chip">{p.label}</span>}
-      </div>
-      <div className="ppp-property-meta">
-        <span>{p.beds} bd</span>
-        <span>{p.baths} ba</span>
-        <span>{p.sqft} sqft</span>
-      </div>
+function Collapsible({ title, defaultOpen = false, children }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`ppp-accordion ${open ? "is-open" : ""}`}>
+      <button className="ppp-accordion__btn" type="button" onClick={() => setOpen(!open)}>
+        <span className="ppp-accordion__title">{title}</span>
+        <span className="ppp-accordion__chev" aria-hidden>
+          ▾
+        </span>
+      </button>
+      <div className="ppp-accordion__panel">{open ? children : null}</div>
     </div>
-    <div className="ppp-property-numbers">
-      <div className="ppp-price">{p.price}</div>
-      <div className="ppp-income-pair">
-        <div>
-          <div className="ppp-income-label">Monthly Income</div>
-          <div className="ppp-income-value">{p.monthlyRange}</div>
-        </div>
-        <div>
-          <div className="ppp-income-label">Annual Income</div>
-          <div className="ppp-income-value">{p.annualRange}</div>
-        </div>
-      </div>
-    </div>
-  </a>
-);
+  );
+}
 
-const MarketCard = ({ market }) => (
-  <section className="ppp-market">
-    <header className="ppp-market-header">
-      <div>
-        <div className="ppp-market-title">
-          <span className="ppp-market-pin">📍</span>
-          <span>{market.name}</span>
-          <span className="ppp-market-hearts">
-            <HeartRow count={market.hearts} />
-          </span>
-        </div>
-        <div className="ppp-market-tag">{market.tag}</div>
-      </div>
-      <div className="ppp-market-summary">
-        <div className="ppp-market-value">{market.totalValue}</div>
-        <div className="ppp-market-count">
-          {market.propertyCount} Properties
-        </div>
-      </div>
-    </header>
-
-    <div className="ppp-market-body">
-      <div className="ppp-market-stats-row">
-        <StatCard
-          label="Monthly Income"
-          value={market.monthlyRange}
-          gradient="linear-gradient(135deg,#f5f7ff,#ecf2ff)"
-        />
-        <StatCard
-          label="Annual Income"
-          value={market.annualRange}
-          gradient="linear-gradient(135deg,#fff5fb,#ffe9f4)"
-        />
-      </div>
-
-      <div className="ppp-info-card ppp-dating">
-        <div className="ppp-info-label">
-          <span>♡</span>
-          <span>Dating Scene</span>
-        </div>
-        <p>{market.datingScene}</p>
-      </div>
-
-      <div className="ppp-info-card">
-        <div className="ppp-info-label">Best For</div>
-        <p>{market.bestFor}</p>
-      </div>
-
-      <div className="ppp-properties">
-        {market.properties.map((p) => (
-          <PropertyRow key={p.id} p={p} />
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
+/* -----------------------------
+   Main component
+----------------------------- */
 export default function PropertyPortfolio() {
+  // persisted UI prefs
+  const [darkMode, setDarkMode] = useState(() => readJSON(LS_KEYS.dark, false));
+  const [notesOn, setNotesOn] = useState(() => readJSON(LS_KEYS.notesOn, false));
+  const [convoOn, setConvoOn] = useState(() => readJSON(LS_KEYS.convoOn, false));
+
+  const [favorites, setFavorites] = useState(() => new Set(readJSON(LS_KEYS.favorites, [])));
+  const [votes, setVotes] = useState(() => readJSON(LS_KEYS.votes, {})); // { [propertyId]: { up: number, down: number } }
+
+  // Filters
+  const initialFilters = readJSON(LS_KEYS.filters, {
+    query: "",
+    onlyJason: false,
+    groupId: "all",
+    minRoses: 0,
+    sort: "default", // default | price_desc | price_asc | income_desc | income_asc
+    mapOnly: false,
+    favoritesOnly: false,
+  });
+
+  const [query, setQuery] = useState(initialFilters.query);
+  const [onlyJason, setOnlyJason] = useState(initialFilters.onlyJason);
+  const [favoritesOnly, setFavoritesOnly] = useState(initialFilters.favoritesOnly);
+  const [groupId, setGroupId] = useState(initialFilters.groupId);
+  const [minRoses, setMinRoses] = useState(initialFilters.minRoses);
+  const [sort, setSort] = useState(initialFilters.sort);
+  const [mapOnly, setMapOnly] = useState(initialFilters.mapOnly);
+
+  // Apply dark mode class to body
+  React.useEffect(() => {
+    document.body.classList.toggle("dark", !!darkMode);
+    writeJSON(LS_KEYS.dark, !!darkMode);
+  }, [darkMode]);
+
+  React.useEffect(() => {
+    writeJSON(LS_KEYS.notesOn, !!notesOn);
+  }, [notesOn]);
+
+  React.useEffect(() => {
+    writeJSON(LS_KEYS.convoOn, !!convoOn);
+  }, [convoOn]);
+
+  React.useEffect(() => {
+    writeJSON(LS_KEYS.favorites, Array.from(favorites));
+  }, [favorites]);
+
+  React.useEffect(() => {
+    writeJSON(LS_KEYS.votes, votes);
+  }, [votes]);
+
+  React.useEffect(() => {
+    writeJSON(LS_KEYS.filters, {
+      query,
+      onlyJason,
+      favoritesOnly,
+      groupId,
+      minRoses,
+      sort,
+      mapOnly,
+    });
+  }, [query, onlyJason, favoritesOnly, groupId, minRoses, sort, mapOnly]);
+
+  const groups = portfolio?.groups || [];
+
+  // Flatten list for search & map-only view
+  const allProps = useMemo(() => {
+    const out = [];
+    for (const g of groups) {
+      for (const p of g.properties || []) {
+        out.push({ group: g, property: p });
+      }
+    }
+    return out;
+  }, [groups]);
+
+  const filtered = useMemo(() => {
+    const q = (query || "").trim().toLowerCase();
+
+    let list = allProps.filter(({ group, property }) => {
+      if (groupId !== "all" && group.id !== groupId) return false;
+      if ((group.roses || 0) < (minRoses || 0)) return false;
+
+      if (onlyJason && !property.isJason) return false;
+      if (favoritesOnly && !favorites.has(property.id)) return false;
+
+      if (!q) return true;
+      const hay = [
+        property.address,
+        property.city,
+        property.state,
+        group.name,
+        group.region,
+        property.roiNotes,
+      ]
+        .filter(Boolean)
+        .join(" | ")
+        .toLowerCase();
+
+      return hay.includes(q);
+    });
+
+    // sorting
+    const getIncomeMid = (p) => {
+      const mi = p.monthlyIncome?.min ?? 0;
+      const mx = p.monthlyIncome?.max ?? 0;
+      return (mi + mx) / 2;
+    };
+
+    if (sort === "price_desc") list.sort((a, b) => (b.property.price || 0) - (a.property.price || 0));
+    if (sort === "price_asc") list.sort((a, b) => (a.property.price || 0) - (b.property.price || 0));
+    if (sort === "income_desc") list.sort((a, b) => getIncomeMid(b.property) - getIncomeMid(a.property));
+    if (sort === "income_asc") list.sort((a, b) => getIncomeMid(a.property) - getIncomeMid(b.property));
+
+    return list;
+  }, [allProps, query, groupId, minRoses, onlyJason, favoritesOnly, sort, favorites]);
+
+  // Group back for list view
+  const groupedForList = useMemo(() => {
+    const map = new Map(); // groupId -> { group, items: Property[] }
+    for (const { group, property } of filtered) {
+      if (!map.has(group.id)) map.set(group.id, { group, props: [] });
+      map.get(group.id).props.push(property);
+    }
+    return Array.from(map.values());
+  }, [filtered]);
+
+  const toggleFavorite = (propertyId) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(propertyId)) next.delete(propertyId);
+      else next.add(propertyId);
+      return next;
+    });
+  };
+
+  const vote = (propertyId, dir) => {
+    setVotes((prev) => {
+      const next = { ...prev };
+      const cur = next[propertyId] || { up: 0, down: 0 };
+      next[propertyId] = {
+        up: cur.up + (dir === "up" ? 1 : 0),
+        down: cur.down + (dir === "down" ? 1 : 0),
+      };
+      return next;
+    });
+  };
+
+  const scoreFor = (propertyId) => {
+    const v = votes[propertyId] || { up: 0, down: 0 };
+    return (v.up || 0) - (v.down || 0);
+  };
+
+  const totalShown = filtered.length;
+
   return (
     <div className="ppp-page">
       <div className="ppp-shell">
+        {/* -----------------------------
+            Header
+        ----------------------------- */}
         <header className="ppp-header">
-          <div>
-            <h1 className="ppp-title">
-              {portfolio.title}
-            </h1>
+          <div className="ppp-header__left">
+            <div className="ppp-kicker">Family Property Companion</div>
+            <h1 className="ppp-title">Property Portfolio</h1>
             <p className="ppp-subtitle">
-              {portfolio.subtitle}
+              {portfolio?.generatedFor || "A shared view of our properties"}
+              <span className="ppp-dot">•</span>
+              <span className="ppp-muted">{groups.length} groups</span>
+              <span className="ppp-dot">•</span>
+              <span className="ppp-muted">{totalShown} homes shown</span>
             </p>
           </div>
-          <button className="ppp-download-btn">
-            <span className="ppp-download-icon">⬇️</span>
-            Download PDF
-          </button>
+
+          <div className="ppp-header__right">
+            <div className="ppp-actions">
+              <button className="ppp-btn" type="button" onClick={() => window.print()}>
+                Download PDF
+              </button>
+
+              <IconButton
+                title="Toggle dark mode"
+                onClick={() => setDarkMode((v) => !v)}
+                pressed={darkMode}
+              >
+                {darkMode ? "☾" : "☀︎"}
+              </IconButton>
+
+              <IconButton
+                title="Toggle family notes"
+                onClick={() => setNotesOn((v) => !v)}
+                pressed={notesOn}
+              >
+                📝
+              </IconButton>
+
+              <IconButton
+                title="Conversation mode"
+                onClick={() => setConvoOn((v) => !v)}
+                pressed={convoOn}
+              >
+                💬
+              </IconButton>
+
+              <IconButton title="Map-only view" onClick={() => setMapOnly((v) => !v)} pressed={mapOnly}>
+                🗺️
+              </IconButton>
+            </div>
+          </div>
         </header>
 
-        <div className="ppp-top-stats">
-          <StatCard
-            icon="🏡"
-            label="Total Value"
-            value={portfolio.totalValue}
-            gradient="linear-gradient(135deg,#e8ffe8,#f4fff5)"
-          />
-          <StatCard
-            icon="📈"
-            label="Monthly Income"
-            value={portfolio.monthlyIncomeRange}
-            gradient="linear-gradient(135deg,#edf4ff,#eef2ff)"
-          />
-          <StatCard
-            icon="💸"
-            label="Annual Income"
-            value={portfolio.annualIncomeRange}
-            gradient="linear-gradient(135deg,#ffeefc,#ffe9f4)"
-          />
-        </div>
+        {/* -----------------------------
+            Filters
+        ----------------------------- */}
+        <section className="ppp-toolbar">
+          <div className="ppp-toolbar__row">
+            <div className="ppp-search">
+              <input
+                className="ppp-input"
+                placeholder="Search address, city, region, ROI notes…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search properties"
+              />
+            </div>
 
-        <div className="ppp-market-list">
-          {markets.map((m) => (
-            <MarketCard key={m.id} market={m} />
-          ))}
-        </div>
+            <div className="ppp-filter">
+              <label className="ppp-label">Group</label>
+              <select className="ppp-select" value={groupId} onChange={(e) => setGroupId(e.target.value)}>
+                <option value="all">All groups</option>
+                {groups.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="ppp-filter">
+              <label className="ppp-label">Min roses</label>
+              <select
+                className="ppp-select"
+                value={minRoses}
+                onChange={(e) => setMinRoses(Number(e.target.value))}
+              >
+                <option value={0}>Any</option>
+                <option value={1}>🌹+</option>
+                <option value={2}>🌹🌹+</option>
+                <option value={3}>🌹🌹🌹+</option>
+                <option value={4}>🌹🌹🌹🌹</option>
+              </select>
+            </div>
+
+            <div className="ppp-filter">
+              <label className="ppp-label">Sort</label>
+              <select className="ppp-select" value={sort} onChange={(e) => setSort(e.target.value)}>
+                <option value="default">Default</option>
+                <option value="price_desc">Price (high → low)</option>
+                <option value="price_asc">Price (low → high)</option>
+                <option value="income_desc">Monthly income (high → low)</option>
+                <option value="income_asc">Monthly income (low → high)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="ppp-toolbar__row ppp-toolbar__row--toggles">
+            <label className="ppp-toggle">
+              <input type="checkbox" checked={onlyJason} onChange={(e) => setOnlyJason(e.target.checked)} />
+              <span>Only Jason’s ⭐</span>
+            </label>
+
+            <label className="ppp-toggle">
+              <input
+                type="checkbox"
+                checked={favoritesOnly}
+                onChange={(e) => setFavoritesOnly(e.target.checked)}
+              />
+              <span>Favorites only</span>
+            </label>
+
+            {convoOn ? (
+              <div className="ppp-convo-hint">
+                💬 Conversation mode is on: each property includes prompts to help you discuss pros/cons.
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        {/* -----------------------------
+            Map-only view (grid of group maps + property pins)
+        ----------------------------- */}
+        {mapOnly ? (
+          <section className="ppp-map-only">
+            <div className="ppp-mapgrid">
+              {groups
+                .filter((g) => (groupId === "all" ? true : g.id === groupId))
+                .filter((g) => (g.roses || 0) >= (minRoses || 0))
+                .map((g) => (
+                  <div className="ppp-mapcard" key={g.id}>
+                    <div className="ppp-mapcard__top">
+                      <div className="ppp-mapcard__title">
+                        <span>{g.name}</span>
+                        <span className="ppp-roses">{roseLabel(g.roses)}</span>
+                      </div>
+                      <div className="ppp-mapcard__tag">{g.region}</div>
+                    </div>
+
+                    {g.map?.staticUrl ? (
+                      <img className="ppp-mapimg" src={g.map.staticUrl} alt={`Map preview for ${g.name}`} />
+                    ) : (
+                      <div className="ppp-mapimg ppp-mapimg--empty">No map preview</div>
+                    )}
+
+                    <div className="ppp-mapcard__list">
+                      {(g.properties || [])
+                        .filter((p) => (onlyJason ? !!p.isJason : true))
+                        .filter((p) => (favoritesOnly ? favorites.has(p.id) : true))
+                        .filter((p) => {
+                          const q = (query || "").trim().toLowerCase();
+                          if (!q) return true;
+                          const hay = [p.address, p.city, p.state, p.roiNotes].filter(Boolean).join(" ").toLowerCase();
+                          return hay.includes(q);
+                        })
+                        .map((p) => (
+                          <div className="ppp-minirow" key={p.id}>
+                            <div className="ppp-minirow__left">
+                              <div className="ppp-minirow__addr">
+                                {p.isJason ? <span className="ppp-jstar" title="Jason">⭐ J</span> : null}
+                                <span>{p.address}</span>
+                              </div>
+                              <div className="ppp-minirow__meta">
+                                {p.city}, {p.state} • {p.beds} bd • {p.baths} ba • {p.sqft.toLocaleString()} sqft
+                              </div>
+                            </div>
+
+                            <div className="ppp-minirow__right">
+                              <IconButton
+                                title={favorites.has(p.id) ? "Unfavorite" : "Favorite"}
+                                onClick={() => toggleFavorite(p.id)}
+                                pressed={favorites.has(p.id)}
+                                className="ppp-minirow__fav"
+                              >
+                                {favorites.has(p.id) ? "★" : "☆"}
+                              </IconButton>
+                              <a className="ppp-minirow__link" href={p.zillowUrl} target="_blank" rel="noreferrer">
+                                Zillow ↗
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </section>
+        ) : (
+          /* -----------------------------
+              Normal list view (Group sections)
+          ----------------------------- */
+          <div className="ppp-market-list">
+            {groupedForList.map(({ group: g, props }) => (
+              <section className="market-card" key={g.id} data-pdf-section={g.pdf?.section || ""}>
+                {/* Group Header */}
+                <header className="market-header">
+                  <div className="ppp-grouphead">
+                    <div className="ppp-grouphead__title">
+                      <div className="ppp-grouphead__name">{g.name}</div>
+                      <div className="ppp-grouphead__meta">
+                        <Chip tone="lux">{g.region}</Chip>
+                        <span className="ppp-roses">{roseLabel(g.roses)}</span>
+                      </div>
+                    </div>
+
+                    <div className="ppp-grouphead__right">
+                      <div className="ppp-grouphead__small">Map Preview</div>
+                      {g.map?.staticUrl ? (
+                        <a className="ppp-maplink" href={g.map.staticUrl} target="_blank" rel="noreferrer">
+                          Open ↗
+                        </a>
+                      ) : (
+                        <span className="ppp-muted">None</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {g.map?.staticUrl ? (
+                    <img className="ppp-groupmap" src={g.map.staticUrl} alt={`Map preview for ${g.name}`} />
+                  ) : null}
+                </header>
+
+                {/* Group Body */}
+                <div className="ppp-market-body">
+                  <div className="metric-row">
+                    <div className="metric-box">
+                      <div className="metric-label">Dating Scene</div>
+                      <div className="metric-value">{g.datingScene}</div>
+                    </div>
+                    <div className="metric-box">
+                      <div className="metric-label">Best For</div>
+                      <div className="metric-value">{g.bestFor}</div>
+                    </div>
+                  </div>
+
+                  {/* Properties */}
+                  <div className="property-list">
+                    {props.map((p) => (
+                      <PropertyCard
+                        key={p.id}
+                        p={p}
+                        group={g}
+                        favorites={favorites}
+                        toggleFavorite={toggleFavorite}
+                        vote={vote}
+                        score={scoreFor(p.id)}
+                        notesOn={notesOn}
+                        convoOn={convoOn}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </section>
+            ))}
+
+            {groupedForList.length === 0 ? (
+              <div className="ppp-empty">
+                <div className="ppp-empty__title">No matches</div>
+                <div className="ppp-empty__sub">Try clearing filters or searching something broader.</div>
+              </div>
+            ) : null}
+          </div>
+        )}
+
+        <footer className="ppp-footer">
+          <div className="ppp-footer__left">
+            <span className="ppp-muted">Version</span> <span className="ppp-mono">{portfolio?.version || "—"}</span>
+          </div>
+          <div className="ppp-footer__right ppp-muted">
+            Tip: Use “Download PDF” for the storybook print view.
+          </div>
+        </footer>
       </div>
     </div>
   );
 }
 
+/* -----------------------------
+   Property Card
+----------------------------- */
+function PropertyCard({ p, group, favorites, toggleFavorite, vote, score, notesOn, convoOn }) {
+  const [capOpen, setCapOpen] = useState(false);
 
+  const monthly = fmtRange(p.monthlyIncome?.min ?? 0, p.monthlyIncome?.max ?? 0);
+  const annual = fmtRange(p.annualIncome?.min ?? 0, p.annualIncome?.max ?? 0);
 
+  const showCap = !!p.capRate?.enabled || capOpen;
+
+  const jStar = p.isJason ? (
+    <span className="ppp-jstar" title="Jason’s desired property">
+      ⭐ J
+    </span>
+  ) : null;
+
+  return (
+    <article className="property-card" data-property-id={p.id}>
+      <div className="ppp-prop-top">
+        <div className="ppp-prop-title">
+          <div className="property-title">
+            {jStar} {p.address}
+          </div>
+          <div className="property-meta">
+            <span>
+              {p.city}, {p.state}
+            </span>
+            <span>•</span>
+            <span>
+              {p.beds} bd
+            </span>
+            <span>
+              {p.baths} ba
+            </span>
+            <span>
+              {Number(p.sqft || 0).toLocaleString()} sqft
+            </span>
+          </div>
+        </div>
+
+        <div className="ppp-prop-actions">
+          <IconButton
+            title={favorites.has(p.id) ? "Unfavorite" : "Favorite"}
+            onClick={() => toggleFavorite(p.id)}
+            pressed={favorites.has(p.id)}
+          >
+            {favorites.has(p.id) ? "★" : "☆"}
+          </IconButton>
+
+          <IconButton title="Vote up" onClick={() => vote(p.id, "up")}>
+            👍
+          </IconButton>
+          <IconButton title="Vote down" onClick={() => vote(p.id, "down")}>
+            👎
+          </IconButton>
+
+          <div className="ppp-score" title="Score (upvotes - downvotes)">
+            {score >= 0 ? `+${score}` : score}
+          </div>
+
+          <a className="ppp-zillow" href={p.zillowUrl} target="_blank" rel="noreferrer">
+            Zillow ↗
+          </a>
+        </div>
+      </div>
+
+      <div className="property-income">
+        <div>
+          <div className="metric-label">Price</div>
+          <div className="metric-value">{money(p.price || 0)}</div>
+        </div>
+
+        <div>
+          <div className="metric-label">Monthly income</div>
+          <div className="metric-value monthly">{monthly}</div>
+        </div>
+
+        <div>
+          <div className="metric-label">Annual income</div>
+          <div className="metric-value annual">{annual}</div>
+        </div>
+      </div>
+
+      <div className="ppp-roi">
+        <div className="ppp-roi__label">ROI Notes</div>
+        <div className="ppp-roi__text">{p.roiNotes}</div>
+      </div>
+
+      {/* Cap rate math (hidden by default) */}
+      <div className="ppp-cap">
+        <button className="ppp-cap__toggle" type="button" onClick={() => setCapOpen((v) => !v)}>
+          {showCap ? "Hide cap-rate math" : "Show cap-rate math"}
+        </button>
+
+        {showCap ? (
+          <div className="ppp-cap__grid">
+            <StatPill tone="neutral" label="Estimated NOI (annual)" value={money(p.capRate?.estimatedNOI || 0)} />
+            <StatPill
+              tone="lux"
+              label="Estimated cap rate"
+              value={`${Number(p.capRate?.estimatedCapRate || 0).toFixed(1)}%`}
+            />
+            <div className="ppp-cap__fine">
+              Note: This is an estimate for discussion only, not investment advice.
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Private/family notes (viewer toggled) */}
+      {notesOn ? (
+        <Collapsible title="Family notes" defaultOpen={false}>
+          {p.privateNotes?.notes?.length ? (
+            <ul className="ppp-notes">
+              {p.privateNotes.notes.map((n, idx) => (
+                <li key={idx}>{n}</li>
+              ))}
+            </ul>
+          ) : (
+            <div className="ppp-muted">No notes yet.</div>
+          )}
+        </Collapsible>
+      ) : null}
+
+      {/* Conversation mode */}
+      {convoOn ? (
+        <div className="ppp-convo">
+          <div className="ppp-convo__title">Conversation prompts</div>
+          <div className="ppp-convo__grid">
+            <div className="ppp-convo__card">
+              <div className="ppp-convo__q">What do we love most here?</div>
+              <div className="ppp-convo__a ppp-muted">Views, layout, location, “feels like home” factor…</div>
+            </div>
+            <div className="ppp-convo__card">
+              <div className="ppp-convo__q">What’s the main tradeoff?</div>
+              <div className="ppp-convo__a ppp-muted">Maintenance, access, seasonality, price vs. utility…</div>
+            </div>
+            <div className="ppp-convo__card">
+              <div className="ppp-convo__q">Best use-case for our family?</div>
+              <div className="ppp-convo__a ppp-muted">Holidays, hosting, quiet weekends, long stays…</div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* PDF hint section tags (for your print CSS if you want) */}
+      <div className="ppp-print-meta" aria-hidden>
+        <span className="ppp-print-chip">{group?.pdf?.section || ""}</span>
+        {group?.pdf?.avoidPageBreak ? <span className="ppp-print-chip">AvoidBreak</span> : null}
+      </div>
+    </article>
+  );
+}
