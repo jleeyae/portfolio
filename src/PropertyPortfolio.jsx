@@ -1,4 +1,3 @@
-// src/PropertyPortfolio.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
@@ -9,18 +8,12 @@ import { useFavorites } from "./hooks/useFavorites";
 import { useViewer } from "./hooks/useViewer";
 import { useFamilyVoting, Stars } from "./hooks/useFamilyVoting";
 
-/* =========================
-   Helpers
-========================= */
-
 const money = (n) =>
-  Number.isFinite(n)
-    ? n.toLocaleString(undefined, {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-      })
-    : "";
+  (Number.isFinite(n) ? n : 0).toLocaleString(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
 
 const fmtRange = (min, max) => `${money(min)}–${money(max)}`;
 
@@ -32,33 +25,24 @@ const mapsUrlFor = (p) =>
   )}`;
 
 // “Open in Redfin” safely: use Google search constrained to redfin.
-// Avoids wrong-house IDs and works without Redfin listing IDs.
+// Avoids wrong-house direct IDs and works without Redfin IDs.
 const redfinUrlFor = (p) =>
   `https://www.google.com/search?q=${encodeURIComponent(
     `${fullAddress(p)} site:redfin.com`
   )}`;
 
-// House image preview (not listing photos): Unsplash query
+const areaMapsUrlForGroup = (g) =>
+  `https://www.google.com/maps/@${g.map.lat},${g.map.lng},${g.map.zoom}z`;
+
 const propertyThumb = (p) =>
-  `https://picsum.photos/seed/${encodeURIComponent(
-    `${p.id}-${p.city}`
-  )}/640/420`;
-
-// Group map preview (if you provide map.staticUrl in data)
-const groupMapImg = (group) => {
-  const url = group?.map?.staticUrl;
-  return typeof url === "string" && url.length ? url : null;
-};
-
-/* =========================
-   UI Bits
-========================= */
+  `https://source.unsplash.com/800x600/?${encodeURIComponent(
+    `${p.city} ${p.state} luxury home exterior`
+  )}`;
 
 function RoseRow({ count }) {
-  const n = Math.max(0, Number(count) || 0);
   return (
     <span className="pp-roses" aria-label="rating">
-      {Array.from({ length: n }).map((_, i) => (
+      {Array.from({ length: count }).map((_, i) => (
         <span key={i}>🌹</span>
       ))}
     </span>
@@ -66,97 +50,64 @@ function RoseRow({ count }) {
 }
 
 /**
- * Ultra-safe VibeRow supporting BOTH data shapes:
- * A) New shape: { title, subtitle?, photos: [{ url, credit? }] }
- * B) Old shape: [{ id, label, imageUrl, mapsUrl }]
- * Anything else renders null (never crashes).
+ * VibeRow supports BOTH shapes:
+ * 1) Array shape: [{ id, label, imageUrl, mapsUrl }]
+ * 2) Object shape: { title, subtitle?, photos: [{ url, credit? }] }
  */
 function VibeRow({ vibes }) {
   if (!vibes) return null;
 
-  // Normalize into an array of image URLs
-  let images = [];
-
-  // New structured vibes
-  if (vibes.photos && Array.isArray(vibes.photos)) {
-    images = vibes.photos.map((p, i) =>
-      p.url ||
-      `https://picsum.photos/seed/${encodeURIComponent(
-        `${vibes.title || "vibe"}-${i}`
-      )}/360/240`
-    );
-  }
-
-  // Old array-based vibes
-  if (Array.isArray(vibes)) {
-    images = vibes.map(
-      (v, i) =>
-        v.imageUrl ||
-        `https://picsum.photos/seed/${encodeURIComponent(
-          `${v.label || "vibe"}-${i}`
-        )}/360/240`
-    );
-  }
-
-  if (!images.length) return null;
-
-  return (
-    <div className="pp-vibes">
-      {images.slice(0, 6).map((src, i) => (
-        <img
-          key={i}
-          className="pp-vibe-img"
-          src={src}
-          alt="Area vibe"
-          loading="lazy"
-        />
-      ))}
-    </div>
-  );
-}
-
-
-  // Old shape: array
+  // Array shape (old)
   if (Array.isArray(vibes)) {
     if (!vibes.length) return null;
-
     return (
       <div className="pp-vibes" aria-label="Vibes">
-        {vibes.slice(0, 6).map((v, i) => {
-          const src = v?.imageUrl || v?.url;
-          if (!src) return null;
-
-          const img = (
+        {vibes.slice(0, 6).map((v, i) => (
+          <a
+            key={v.id || `${v.label}-${i}`}
+            className="pp-vibe"
+            href={v.mapsUrl || "#"}
+            target="_blank"
+            rel="noreferrer"
+            title={v.label}
+          >
             <img
               className="pp-vibe-img"
-              src={src}
-              alt={v?.label || "Vibe"}
+              src={v.imageUrl}
+              alt={v.label || "Vibe"}
               loading="lazy"
             />
-          );
-
-          return v?.mapsUrl ? (
-            <a
-              key={v?.id || `${src}-${i}`}
-              className="pp-vibe"
-              href={v.mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              title={v?.label || "Open in Maps"}
-            >
-              {img}
-            </a>
-          ) : (
-            <span key={v?.id || `${src}-${i}`} className="pp-vibe">
-              {img}
-            </span>
-          );
-        })}
+          </a>
+        ))}
       </div>
     );
   }
 
-  return null;
+  // Object shape (new from Portfolio.ts)
+  const photos = vibes.photos || [];
+  if (!photos.length) return null;
+
+  return (
+    <div className="pp-vibes" aria-label="Vibes">
+      {photos.slice(0, 6).map((ph, i) => (
+        <a
+          key={`${vibes.title || "vibe"}-${i}`}
+          className="pp-vibe"
+          href="#"
+          onClick={(e) => e.preventDefault()}
+          title={vibes.title || "Vibe"}
+        >
+          <img
+            className="pp-vibe-img"
+            src={ph.url}
+            alt={vibes.title ? `${vibes.title} photo ${i + 1}` : `Vibe photo ${i + 1}`}
+            loading="lazy"
+          />
+        </a>
+      ))}
+    </div>
+  );
+}
 
 function FamilyNotesBlock({ propertyId, viewerId, privateNotes }) {
   const key = `pp.notes.${propertyId}.${viewerId}`;
@@ -172,9 +123,7 @@ function FamilyNotesBlock({ propertyId, viewerId, privateNotes }) {
     setText(v);
     try {
       localStorage.setItem(key, v);
-    } catch {
-      // ignore
-    }
+    } catch {}
   };
 
   return (
@@ -203,7 +152,6 @@ function FamilyNotesBlock({ propertyId, viewerId, privateNotes }) {
 
 function ConversationBlock({ propertyId, viewerId }) {
   const key = `pp.thread.${propertyId}`;
-
   const [items, setItems] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(key) || "[]");
@@ -220,20 +168,13 @@ function ConversationBlock({ propertyId, viewerId }) {
 
     const next = [
       ...items,
-      {
-        id: `${Date.now()}`,
-        author: viewerId || "guest",
-        text: msg,
-        ts: new Date().toISOString(),
-      },
+      { id: `${Date.now()}`, author: viewerId, text: msg, ts: new Date().toISOString() },
     ];
 
     setItems(next);
     try {
       localStorage.setItem(key, JSON.stringify(next));
-    } catch {
-      // ignore
-    }
+    } catch {}
     setDraft("");
   };
 
@@ -253,17 +194,13 @@ function ConversationBlock({ propertyId, viewerId }) {
             <div key={m.id} className="pp-msg">
               <div className="pp-msg-meta">
                 <span className="pp-msg-author">{m.author}</span>
-                <span className="pp-msg-ts">
-                  {new Date(m.ts).toLocaleString()}
-                </span>
+                <span className="pp-msg-ts">{new Date(m.ts).toLocaleString()}</span>
               </div>
               <div className="pp-msg-text">{m.text}</div>
             </div>
           ))
         ) : (
-          <div className="pp-thread-empty">
-            No messages yet. Start the story ✍️
-          </div>
+          <div className="pp-thread-empty">No messages yet. Start the story ✍️</div>
         )}
       </div>
 
@@ -273,9 +210,6 @@ function ConversationBlock({ propertyId, viewerId }) {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Add a thought…"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") post();
-          }}
         />
         <button className="pp-btn" type="button" onClick={post}>
           Post
@@ -287,32 +221,20 @@ function ConversationBlock({ propertyId, viewerId }) {
 
 function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
   const [openCapRate, setOpenCapRate] = useState(false);
-  const mapImg = groupMapImg(group);
-
-  // Be defensive about shape
-  const props = Array.isArray(group?.properties) ? group.properties : [];
 
   return (
-    <section className="pp-group" data-pdf-section={group?.pdf?.section || ""}>
+    <section className="pp-group" data-pdf-section={group.pdf?.section || ""}>
       <header className="pp-group-header">
         <div className="pp-group-titleline">
           <div className="pp-group-title">
-            <span className="pp-pin">📍</span> {group?.name || "Market"}
+            <span className="pp-pin">📍</span> {group.name}
           </div>
-          <RoseRow count={group?.roses || 0} />
+          <RoseRow count={group.roses || 0} />
         </div>
 
         <div className="pp-group-sub">
-          {group?.region ? <span className="pp-chip">{group.region}</span> : null}
-
-          <a
-            className="pp-link"
-            href={`https://www.google.com/maps/@${group?.map?.lat || 0},${
-              group?.map?.lng || 0
-            },${group?.map?.zoom || 10}z`}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <span className="pp-chip">{group.region}</span>
+          <a className="pp-link" href={areaMapsUrlForGroup(group)} target="_blank" rel="noreferrer">
             Open area in Maps
           </a>
         </div>
@@ -320,54 +242,41 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
         <div className="pp-group-copy">
           <div className="pp-info">
             <div className="pp-info-label">Dating Scene</div>
-            <div className="pp-info-text">{group?.datingScene || ""}</div>
+            <div className="pp-info-text">{group.datingScene}</div>
           </div>
           <div className="pp-info">
             <div className="pp-info-label">Best For</div>
-            <div className="pp-info-text">{group?.bestFor || ""}</div>
+            <div className="pp-info-text">{group.bestFor}</div>
           </div>
         </div>
 
-        {/* Optional map preview image */}
-        {mapImg ? (
-          <div className="pp-map">
-            <img
-              className="pp-map-img"
-              src={mapImg}
-              alt={`${group?.name || "Area"} map preview`}
-              loading="lazy"
-            />
+        {/* Group vibes */}
+        {group.vibes ? (
+          <div style={{ marginTop: 10 }}>
+            <div style={{ fontWeight: 900, marginBottom: 6 }}>
+              {Array.isArray(group.vibes) ? "Vibes" : group.vibes.title || "Vibes"}
+            </div>
+            {Array.isArray(group.vibes) ? null : group.vibes.subtitle ? (
+              <div style={{ color: "var(--text-secondary)", fontWeight: 600, marginBottom: 8 }}>
+                {group.vibes.subtitle}
+              </div>
+            ) : null}
+            <VibeRow vibes={group.vibes} />
           </div>
         ) : null}
-
-        {/* Vibe previews */}
-        <div className="pp-vibe-block">
-          {group?.vibes?.title ? (
-            <div className="pp-vibe-title">{group.vibes.title}</div>
-          ) : null}
-          {group?.vibes?.subtitle ? (
-            <div className="pp-vibe-sub">{group.vibes.subtitle}</div>
-          ) : null}
-          <VibeRow vibes={group?.vibes} />
-        </div>
       </header>
 
       <div className="pp-group-controls">
-        <button
-          className="pp-btn ghost"
-          type="button"
-          onClick={() => setOpenCapRate((v) => !v)}
-        >
+        <button className="pp-btn ghost" type="button" onClick={() => setOpenCapRate((v) => !v)}>
           {openCapRate ? "Hide cap-rate math" : "Show cap-rate math"}
         </button>
-
         <div className="pp-group-controls-hint">
-          Links: we open <b>Maps</b> + <b>Redfin</b> search (no fragile Zillow IDs).
+          Links: we open Maps + a Redfin search (no fragile Zillow IDs).
         </div>
       </div>
 
       <div className="pp-props">
-        {props.map((p) => {
+        {group.properties.map((p) => {
           const sum = voting.summary(p.id);
           const fav = favorites.isFavorite(p.id);
 
@@ -380,18 +289,10 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                   alt={`${p.city} preview`}
                   loading="lazy"
                 />
-
                 <div className="pp-prop-badges">
                   {p.isJason ? <span className="pp-badge">JASON’S</span> : null}
                   {fav ? <span className="pp-badge subtle">★ Favorite</span> : null}
                 </div>
-
-                {/* Optional property-level vibes */}
-                {p?.vibes ? (
-                  <div className="pp-prop-vibes">
-                    <VibeRow vibes={p.vibes} />
-                  </div>
-                ) : null}
               </div>
 
               <div className="pp-prop-main">
@@ -401,40 +302,19 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                     <div className="pp-prop-meta">
                       <span>{p.beds} bd</span>
                       <span>{p.baths} ba</span>
-                      <span>
-                        {Number.isFinite(p.sqft)
-                          ? p.sqft.toLocaleString()
-                          : p.sqft}
-                        {" "}
-                        sqft
-                      </span>
+                      <span>{(p.sqft || 0).toLocaleString()} sqft</span>
                     </div>
                   </div>
 
                   <div className="pp-prop-actions">
-                    <button
-                      className="pp-btn"
-                      type="button"
-                      onClick={() => favorites.toggleFavorite(p.id)}
-                    >
+                    <button className="pp-btn" type="button" onClick={() => favorites.toggleFavorite(p.id)}>
                       {fav ? "Unfavorite" : "Favorite"}
                     </button>
 
-                    <a
-                      className="pp-btn outline"
-                      href={mapsUrlFor(p)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a className="pp-btn outline" href={mapsUrlFor(p)} target="_blank" rel="noreferrer">
                       Open in Maps
                     </a>
-
-                    <a
-                      className="pp-btn outline"
-                      href={redfinUrlFor(p)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a className="pp-btn outline" href={redfinUrlFor(p)} target="_blank" rel="noreferrer">
                       Open in Redfin
                     </a>
                   </div>
@@ -447,15 +327,11 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                   </div>
                   <div className="pp-stat">
                     <div className="pp-stat-label">Monthly income</div>
-                    <div className="pp-stat-value">
-                      {fmtRange(p?.monthlyIncome?.min, p?.monthlyIncome?.max)}
-                    </div>
+                    <div className="pp-stat-value">{fmtRange(p.monthlyIncome.min, p.monthlyIncome.max)}</div>
                   </div>
                   <div className="pp-stat">
                     <div className="pp-stat-label">Annual income</div>
-                    <div className="pp-stat-value">
-                      {fmtRange(p?.annualIncome?.min, p?.annualIncome?.max)}
-                    </div>
+                    <div className="pp-stat-value">{fmtRange(p.annualIncome.min, p.annualIncome.max)}</div>
                   </div>
                 </div>
 
@@ -464,25 +340,35 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                   <div className="pp-roi-text">{p.roiNotes}</div>
                 </div>
 
+                {/* Property vibes (optional) */}
+                {p.vibes ? (
+                  <div>
+                    <div style={{ fontWeight: 900, marginBottom: 6 }}>
+                      {Array.isArray(p.vibes) ? "Vibes" : p.vibes.title || "Vibes"}
+                    </div>
+                    {Array.isArray(p.vibes) ? null : p.vibes.subtitle ? (
+                      <div style={{ color: "var(--text-secondary)", fontWeight: 600, marginBottom: 8 }}>
+                        {p.vibes.subtitle}
+                      </div>
+                    ) : null}
+                    <VibeRow vibes={p.vibes} />
+                  </div>
+                ) : null}
+
                 {openCapRate ? (
                   <div className="pp-cap">
                     <div className="pp-cap-row">
                       <div className="pp-cap-label">Estimated NOI (annual)</div>
-                      <div className="pp-cap-val">
-                        {money(p?.capRate?.estimatedNOI)}
-                      </div>
+                      <div className="pp-cap-val">{money(p.capRate?.estimatedNOI || 0)}</div>
                     </div>
                     <div className="pp-cap-row">
                       <div className="pp-cap-label">Estimated cap rate</div>
                       <div className="pp-cap-val">
-                        {Number.isFinite(p?.capRate?.estimatedCapRate)
-                          ? `${p.capRate.estimatedCapRate.toFixed(1)}%`
-                          : ""}
+                        {(p.capRate?.estimatedCapRate || 0).toFixed(1)}%
                       </div>
                     </div>
                     <div className="pp-cap-foot">
-                      (Hidden by default because conversations usually start with
-                      vibes + utility, then math.)
+                      (Hidden by default because conversations usually start with vibes + utility, then math.)
                     </div>
                   </div>
                 ) : null}
@@ -491,30 +377,18 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
                   <div className="pp-vote-left">
                     <div className="pp-vote-label">Family rating</div>
                     <div className="pp-vote-sub">
-                      {sum.count
-                        ? `${sum.avg.toFixed(1)} avg (${sum.count} votes)`
-                        : "No votes yet"}
+                      {sum.count ? `${sum.avg.toFixed(1)} avg (${sum.count} votes)` : "No votes yet"}
                     </div>
                   </div>
 
-                  <Stars
-                    value={sum.mine}
-                    title="Your rating"
-                    onChange={(n) => voting.rate(p.id, n)}
-                  />
+                  <Stars value={sum.mine} title="Your rating" onChange={(n) => voting.rate(p.id, n)} />
                 </div>
 
                 {notesOn ? (
-                  <FamilyNotesBlock
-                    propertyId={p.id}
-                    viewerId={viewerId}
-                    privateNotes={p.privateNotes}
-                  />
+                  <FamilyNotesBlock propertyId={p.id} viewerId={viewerId} privateNotes={p.privateNotes} />
                 ) : null}
 
-                {convoOn ? (
-                  <ConversationBlock propertyId={p.id} viewerId={viewerId} />
-                ) : null}
+                {convoOn ? <ConversationBlock propertyId={p.id} viewerId={viewerId} /> : null}
               </div>
             </article>
           );
@@ -523,10 +397,6 @@ function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
     </section>
   );
 }
-
-/* =========================
-   Page
-========================= */
 
 export default function PropertyPortfolio() {
   const [dark, setDark] = useState(false);
@@ -537,11 +407,10 @@ export default function PropertyPortfolio() {
   const favorites = useFavorites();
   const voting = useFamilyVoting(viewerId);
 
-  const groups = useMemo(() => (Array.isArray(portfolio?.groups) ? portfolio.groups : []), []);
+  const groups = useMemo(() => portfolio.groups || [], []);
 
-  // Apply dark mode class
   useEffect(() => {
-    document.body.classList.toggle("dark", !!dark);
+    document.body.classList.toggle("dark", dark);
   }, [dark]);
 
   return (
@@ -549,9 +418,7 @@ export default function PropertyPortfolio() {
       <div className="pp-topbar">
         <div className="pp-brand">
           <div className="pp-title">Property Portfolio</div>
-          <div className="pp-subtitle">
-            A family space for vibes, math, and decisions.
-          </div>
+          <div className="pp-subtitle">A family space for vibes, math, and decisions.</div>
         </div>
 
         <div className="pp-controls">
@@ -565,11 +432,7 @@ export default function PropertyPortfolio() {
             />
           </div>
 
-          <button
-            className="pp-btn outline"
-            type="button"
-            onClick={() => setDark((v) => !v)}
-          >
+          <button className="pp-btn outline" type="button" onClick={() => setDark((v) => !v)}>
             {dark ? "Light" : "Dark"}
           </button>
 
@@ -590,7 +453,7 @@ export default function PropertyPortfolio() {
       <div className="pp-shell">
         <div className="pp-kicker">
           <div className="pp-kicker-left">
-            <div className="pp-kicker-big">{portfolio?.generatedFor || ""}</div>
+            <div className="pp-kicker-big">{portfolio.generatedFor}</div>
             <div className="pp-kicker-small">
               Favorites saved: <b>{favorites.favoritesCount}</b>
               <span className="pp-dot">•</span>
