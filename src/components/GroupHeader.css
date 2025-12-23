@@ -1,0 +1,23 @@
+.groupHeader {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+  align-items: center;
+}
+
+.groupHeaderText .region {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #7c3aed;
+}
+
+.groupHeader h2 {
+  margin: 8px 0;
+}
+
+.groupMap img {
+  width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.12);
+}

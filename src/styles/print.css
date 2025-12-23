@@ -1,0 +1,18 @@
+@media print {
+  body {
+    background: white;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  .groupHeader {
+    page-break-before: always;
+  }
+
+  .propertyCard {
+    break-inside: avoid;
+    margin-bottom: 48px;
+  }
+}

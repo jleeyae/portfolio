@@ -1,108 +1,62 @@
-import { useMemo, useState } from "react";
-import { groups, properties } from "./data/portfolio";
-import { Group, Property } from "./types";
-import { PortfolioHeader } from "./components/PortfolioHeader";
-import { ControlsBar, ControlsState, SortKey } from "./components/ControlsBar";
-import { GroupSection } from "./components/GroupSection";
+import { useState } from "react";
+import { portfolio } from "./data/Portfolio";
 
-function getStateFromGroupTitle(groupTitle: string): "TX" | "CO" | "OTHER" {
-  if (groupTitle.includes("TX")) return "TX";
-  if (groupTitle.includes("CO")) return "CO";
-  return "OTHER";
-}
+import GroupSection from "./components/GroupSection";
+import MapView from "./pages/MapView";
 
-function matchesSearch(p: Property, q: string): boolean {
-  if (!q.trim()) return true;
-  const hay = `${p.addressLine} ${p.cityStateZip}`.toLowerCase();
-  return hay.includes(q.trim().toLowerCase());
-}
+import { useFamilyNotes } from "./hooks/useFamilyNotes";
+import { useConversationMode } from "./hooks/useConversationMode";
 
-function monthlyMid(p: Property): number {
-  return (p.income.monthlyLow + p.income.monthlyHigh) / 2;
-}
+import "./App.css";
 
 export default function App() {
-  const [controls, setControls] = useState<ControlsState>({
-    search: "",
-    stateFilter: "ALL",
-    groupFilter: "ALL",
-    rosesFilter: "ALL",
-    jasonOnly: false,
-    sort: "roses_desc",
-  });
+  // UI modes
+  const [mapOnly, setMapOnly] = useState(false);
 
-  const visibleGroups: Group[] = useMemo(() => {
-    // Groups remain, filtering happens in per-group properties pass
-    return groups;
-  }, []);
-
-  const filteredProperties: Property[] = useMemo(() => {
-    return properties
-      .filter((p) => matchesSearch(p, controls.search))
-      .filter((p) => !controls.jasonOnly || p.isJason === true)
-      .filter((p) => controls.rosesFilter === "ALL" || p.datingScene.roses === controls.rosesFilter)
-      .filter((p) => controls.groupFilter === "ALL" || p.groupId === controls.groupFilter)
-      .filter((p) => {
-        if (controls.stateFilter === "ALL") return true;
-        const g = groups.find((gg) => gg.id === p.groupId);
-        if (!g) return true;
-        return getStateFromGroupTitle(g.title) === controls.stateFilter;
-      });
-  }, [controls]);
-
-  const grouped = useMemo(() => {
-    const byGroup = new Map<string, Property[]>();
-    for (const p of filteredProperties) {
-      const arr = byGroup.get(p.groupId) ?? [];
-      arr.push(p);
-      byGroup.set(p.groupId, arr);
-    }
-
-    const sortKey: SortKey = controls.sort;
-
-    for (const [, arr] of byGroup) {
-      arr.sort((a, b) => {
-        if (sortKey === "price_desc") return b.price - a.price;
-        if (sortKey === "price_asc") return a.price - b.price;
-        if (sortKey === "income_desc") return monthlyMid(b) - monthlyMid(a);
-        if (sortKey === "income_asc") return monthlyMid(a) - monthlyMid(b);
-        // default: inside group, Jason first then price
-        if (a.isJason && !b.isJason) return -1;
-        if (!a.isJason && b.isJason) return 1;
-        return b.price - a.price;
-      });
-    }
-
-    // Sort groups by roses (then by group title)
-    const groupOrder = [...visibleGroups].sort((a, b) => {
-      if (controls.sort === "roses_desc") return b.roses - a.roses;
-      return b.roses - a.roses;
-    });
-
-    return { byGroup, groupOrder };
-  }, [filteredProperties, controls.sort, visibleGroups]);
+  // Toggles
+  const { enabled: notesOn, toggle: toggleNotes } = useFamilyNotes();
+  const { enabled: convoOn, toggle: toggleConvo } = useConversationMode();
 
   return (
-    <div className="container">
-      <PortfolioHeader />
+    <main className="app">
+      {/* =====================
+          TOP CONTROLS
+         ===================== */}
+      <div className="controls">
+        <button onClick={() => setMapOnly(!mapOnly)}>
+          {mapOnly ? "Back to List" : "Map View"}
+        </button>
+        <button
+          onClick={() =>
+            document.body.classList.toggle("dark")
+          }
+        >
+          Toggle Dark Mode
+        </button>
 
-      <ControlsBar groups={groups} state={controls} onChange={setControls} />
+        <button onClick={toggleNotes}>
+          {notesOn ? "Hide Family Notes" : "Show Family Notes"}
+        </button>
 
-      <div className="groupWrap">
-        {grouped.groupOrder.map((g) => {
-          const props = grouped.byGroup.get(g.id) ?? [];
-          if (props.length === 0) return null;
+        <button onClick={toggleConvo}>
+          {convoOn ? "Exit Conversation Mode" : "Conversation Mode"}
+        </button>
 
-          return (
-            <GroupSection
-              key={g.id}
-              group={g}
-              properties={props}
-              defaultOpen={false}
-            />
-          );
-        })}
+        <button onClick={() => window.print()}>
+          Download PDF
+        </button>
       </div>
-    </div>
+
+      {/* =====================
+          MAIN CONTENT
+         ===================== */}
+      {mapOnly ? (
+        <MapView />
+      ) : (
+        portfolio.groups.map((group) => (
+          <GroupSection key={group.id} group={group} />
+        ))
+      )}
+    </main>
   );
 }

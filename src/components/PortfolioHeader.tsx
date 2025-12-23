@@ -1,19 +1,22 @@
-export function PortfolioHeader() {
+export default function PortfolioHeader() {
   return (
-    <div className="card">
-      <div className="section">
-        <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
-          <div>
-            <h1 className="h1">Premium Property Portfolio</h1>
-            <p className="sub">33 Luxury Properties Across Texas & Colorado</p>
-          </div>
+    <section className="portfolioHeader">
+      <div className="headerLeft">
+        <h1>Premium Property Portfolio</h1>
+        <p className="subtitle">
+          33 Luxury Properties Across Texas & Colorado
+        </p>
 
-          <button className="btn" onClick={() => alert("Hook this up to your PDF generator/download route.")}>
-            <span style={{ fontSize: 18 }}>⬇️</span>
-            Download PDF
-          </button>
-        </div>
+        <ul className="disclaimer">
+          <li>Individually owned luxury residences</li>
+          <li>Income estimates shown per property</li>
+          <li>No aggregated portfolio valuation</li>
+        </ul>
       </div>
-    </div>
+
+      <button className="downloadBtn">
+        ⬇ Download PDF
+      </button>
+    </section>
   );
 }
