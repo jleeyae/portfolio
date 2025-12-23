@@ -1,14 +1,13 @@
-/* ======================================================
-   LUXURY DESIGN SYSTEM — GLOBAL
-   ====================================================== */
+/* src/App.css */
 
+/* ================================
+   DESIGN SYSTEM
+================================ */
 :root {
-  /* Typography */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont,
-    "SF Pro Text", Inter, Avenir, Helvetica, Arial, sans-serif;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter,
+    Avenir, Helvetica, Arial, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, "Times New Roman", serif;
 
-  /* Light mode backgrounds */
-  --bg-page: #eef2ff;
   --bg-gradient-start: #faf7ff;
   --bg-gradient-mid: #eef2ff;
   --bg-gradient-end: #e9f1ff;
@@ -16,64 +15,29 @@
   --bg-card: #ffffff;
   --bg-soft: #f7f8fd;
 
-  /* Text */
   --text-primary: #111827;
   --text-secondary: #6b7280;
 
-  /* Brand */
-  --purple-500: #6a5cff;
   --purple-600: #5b4bff;
   --purple-700: #4f46e5;
 
-  /* Accents */
   --green-income: #15803d;
   --blue-income: #2563eb;
-  --pink-soft: #fff4f7;
-  --pink-border: #ffd6e3;
 
-  /* Radius */
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 22px;
 
-  /* Shadows */
   --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.14);
 
-  /* Motion */
   --transition: 0.2s ease;
-
-  color-scheme: dark;
 }
 
-/* ======================================================
-   DARK MODE (SUBTLE, LUXURY)
-   ====================================================== */
-
-body.dark {
-  --bg-page: #0b0d14;
-  --bg-gradient-start: #0b0d14;
-  --bg-gradient-mid: #0f1220;
-  --bg-gradient-end: #111827;
-
-  --bg-card: #151a2c;
-  --bg-soft: #1b2140;
-
-  --text-primary: #f9fafb;
-  --text-secondary: #a5b4fc;
-
-  --shadow-sm: 0 6px 18px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.7);
-  --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.8);
-
-  color-scheme: dark;
-}
-
-/* ======================================================
-   BASE LAYOUT
-   ====================================================== */
-
+/* ================================
+   BASE
+================================ */
 html,
 body,
 #root {
@@ -85,255 +49,416 @@ body {
   min-width: 320px;
   font-family: var(--font-sans);
   color: var(--text-primary);
-  background:
-    radial-gradient(circle at top,
-      var(--bg-gradient-start) 0%,
-      var(--bg-gradient-mid) 55%,
-      var(--bg-gradient-end) 100%);
+  background: radial-gradient(
+    circle at top,
+    var(--bg-gradient-start) 0%,
+    var(--bg-gradient-mid) 55%,
+    var(--bg-gradient-end) 100%
+  );
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
-
-/* ======================================================
-   TYPOGRAPHY
-   ====================================================== */
-
-h1,
-h2,
-h3,
-h4 {
-  margin: 0;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-h1 {
-  font-size: 2.6rem;
-  margin-bottom: 0.5rem;
-}
-
-h2 {
-  font-size: 1.8rem;
-}
-
-h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-p {
-  margin: 0;
-  color: var(--text-secondary);
-}
-
-/* ======================================================
-   LINKS
-   ====================================================== */
 
 a {
   color: var(--purple-700);
   font-weight: 600;
   text-decoration: none;
 }
-
 a:hover {
   color: var(--purple-600);
   text-decoration: underline;
 }
 
-/* ======================================================
-   BUTTONS
-   ====================================================== */
-
 button {
   appearance: none;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 0.65em 1.4em;
+  padding: 0.65em 1.1em;
   font-family: inherit;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--purple-700);
   background: #f4f5ff;
   cursor: pointer;
   transition: all var(--transition);
 }
-
-body.dark button {
-  background: #23286b;
-  color: #e0e7ff;
-}
-
 button:hover {
-  transform: translateY(-1px);
+  background: #e6e8ff;
   box-shadow: var(--shadow-sm);
 }
-
 button:focus-visible {
   outline: 3px solid #c7d2fe;
   outline-offset: 2px;
 }
 
-/* ======================================================
-   MARKET / GROUP CARD
-   ====================================================== */
+/* ================================
+   PAGE SHELL
+================================ */
+.ppp-page {
+  padding: 32px 16px 60px;
+}
+.ppp-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+}
 
-.market-card {
+/* ================================
+   HEADER
+================================ */
+.ppp-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.ppp-title {
+  font-family: var(--font-serif);
+  font-size: 2.35rem;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.ppp-subtitle {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.ppp-download-btn {
+  border-radius: 999px;
+  padding: 0.75em 1.2em;
+  box-shadow: var(--shadow-sm);
+}
+.ppp-download-icon {
+  margin-right: 8px;
+}
+
+/* ================================
+   TOOLBAR
+================================ */
+.ppp-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 18px 0 22px;
+  padding: 14px 14px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(17, 24, 39, 0.06);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.ppp-search {
+  flex: 1;
+}
+.ppp-search-input {
+  width: 100%;
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  border-radius: 999px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  outline: none;
+}
+.ppp-search-input:focus {
+  border-color: rgba(79, 70, 229, 0.35);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.ppp-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: rgba(17, 24, 39, 0.78);
+  user-select: none;
+}
+.ppp-toggle input {
+  width: 18px;
+  height: 18px;
+}
+
+/* ================================
+   MARKET CARD
+================================ */
+.ppp-market {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   overflow: hidden;
+  border: 1px solid rgba(17, 24, 39, 0.06);
 }
 
-/* ======================================================
-   MARKET HEADER (PURPLE BAR)
-   ====================================================== */
-
-.market-header {
-  background: linear-gradient(
-    135deg,
-    var(--purple-600),
-    #8b5cf6
-  );
+.ppp-market-header {
+  background: linear-gradient(135deg, var(--purple-600), #8b5cf6);
   color: white;
-  padding: 26px 30px;
+  padding: 22px 22px;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
 }
 
-.market-header small {
-  display: block;
-  margin-top: 4px;
-  font-size: 0.75rem;
+.ppp-market-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  font-size: 1.1rem;
+}
+
+.ppp-market-pin {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+}
+.ppp-market-roses {
+  opacity: 0.95;
+}
+
+.ppp-market-tag {
+  margin-top: 8px;
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-weight: 800;
   letter-spacing: 0.08em;
-  opacity: 0.85;
+  font-size: 0.72rem;
 }
 
-/* ======================================================
-   METRICS
-   ====================================================== */
-
-.metric-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  padding: 24px 30px;
+.ppp-collapse {
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+}
+.ppp-collapse:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
 
-.metric-box {
+.ppp-market-map {
+  padding: 14px 16px 0;
+}
+.ppp-market-map img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  box-shadow: var(--shadow-sm);
+}
+
+.ppp-market-body {
+  padding: 16px;
+}
+
+.ppp-info-card {
   background: var(--bg-soft);
+  border: 1px solid rgba(17, 24, 39, 0.06);
   border-radius: var(--radius-md);
-  padding: 18px 22px;
-  font-weight: 600;
+  padding: 14px 14px;
+  margin-bottom: 12px;
 }
-
-.metric-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.ppp-info-label {
+  font-weight: 900;
+  color: rgba(17, 24, 39, 0.88);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.ppp-info-card p {
+  margin: 0;
   color: var(--text-secondary);
+  font-weight: 550;
 }
 
-.metric-value {
-  font-size: 1.2rem;
-  margin-top: 6px;
-}
-
-/* ======================================================
-   CALLOUTS
-   ====================================================== */
-
-.callout-dating {
-  margin: 0 30px 24px;
-  background: var(--pink-soft);
-  border: 1px solid var(--pink-border);
-  border-radius: var(--radius-md);
-  padding: 16px 20px;
-  font-weight: 500;
-}
-
-.best-for {
-  margin: 0 30px 30px;
-  background: #f1f5ff;
-  border-radius: var(--radius-md);
-  padding: 18px 22px;
-  font-weight: 500;
-}
-
-/* ======================================================
+/* ================================
    PROPERTY LIST
-   ====================================================== */
-
-.property-list {
-  padding: 0 30px 30px;
+================================ */
+.ppp-properties {
   display: grid;
-  gap: 18px;
+  gap: 14px;
+  margin-top: 14px;
 }
 
-.property-card {
-  background: var(--bg-card);
-  border: 1px solid #eef0f5;
+/* property card layout */
+.ppp-property-card {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 14px;
   border-radius: var(--radius-md);
-  padding: 20px;
-  display: grid;
-  gap: 12px;
-  transition: all var(--transition);
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: white;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
 }
-
-.property-card:hover {
+.ppp-property-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
 
-/* ======================================================
-   PROPERTY DETAILS
-   ====================================================== */
+.ppp-property-left {
+  background: #0b1220;
+}
+.ppp-property-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-.property-title {
+.ppp-img-fallback {
+  height: 100%;
+  min-height: 190px;
+  display: grid;
+  place-content: center;
+  padding: 18px;
+  color: rgba(255, 255, 255, 0.88);
+  text-align: center;
+  background: radial-gradient(circle at top, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
+}
+.ppp-img-fallback-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
   font-weight: 700;
-  font-size: 1rem;
+}
+.ppp-img-fallback-sub {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.85;
 }
 
-.property-meta {
+.ppp-property-right {
+  padding: 14px 14px 14px 6px;
+  display: grid;
+  gap: 10px;
+}
+
+.ppp-property-address {
+  font-weight: 950;
+  letter-spacing: -0.01em;
   display: flex;
-  gap: 16px;
-  font-size: 0.85rem;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ppp-jason-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(79, 70, 229, 0.10);
+  border: 1px solid rgba(79, 70, 229, 0.20);
+  color: rgba(79, 70, 229, 0.95);
+  font-weight: 950;
+}
+
+.ppp-property-meta {
+  display: flex;
+  gap: 14px;
   color: var(--text-secondary);
+  font-weight: 650;
+  font-size: 0.92rem;
+  margin-top: 6px;
 }
 
-.property-income {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
+.ppp-property-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.property-income .monthly {
+.ppp-metric {
+  background: var(--bg-soft);
+  border: 1px solid rgba(17, 24, 39, 0.06);
+  border-radius: var(--radius-md);
+  padding: 10px 10px;
+}
+.ppp-metric-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(107, 114, 128, 0.92);
+  font-weight: 900;
+}
+.ppp-metric-value {
+  margin-top: 6px;
+  font-weight: 950;
+}
+.ppp-income-monthly {
   color: var(--green-income);
 }
-
-.property-income .annual {
+.ppp-income-annual {
   color: var(--blue-income);
 }
 
-/* ======================================================
-   PRINT (PDF)
-   ====================================================== */
+.ppp-roi {
+  background: rgba(17, 24, 39, 0.03);
+  border: 1px solid rgba(17, 24, 39, 0.06);
+  border-radius: var(--radius-md);
+  padding: 10px 10px;
+}
+.ppp-roi-label {
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  font-size: 0.82rem;
+  color: rgba(17, 24, 39, 0.80);
+  margin-bottom: 6px;
+}
+.ppp-roi-text {
+  color: rgba(17, 24, 39, 0.70);
+  font-weight: 600;
+}
 
-@media print {
-  body {
-    background: white;
+.ppp-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.ppp-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 12px;
+  background: #f4f5ff;
+  color: rgba(79, 70, 229, 0.95);
+  font-weight: 950;
+  border: 1px solid rgba(79, 70, 229, 0.18);
+  text-decoration: none;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.ppp-pill:hover {
+  transform: translateY(-1px);
+  background: #e6e8ff;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+
+/* Jason highlight edge */
+.ppp-property-card.is-jason {
+  border-color: rgba(79, 70, 229, 0.22);
+  box-shadow: 0 10px 26px rgba(79, 70, 229, 0.10);
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .ppp-property-card {
+    grid-template-columns: 1fr;
   }
-
-  button,
-  .controls {
-    display: none !important;
+  .ppp-property-right {
+    padding: 12px;
   }
-
-  .market-card {
-    box-shadow: none;
-    page-break-inside: avoid;
+  .ppp-property-grid {
+    grid-template-columns: 1fr;
+  }
+  .ppp-toolbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
