@@ -10,7 +10,7 @@ import { useConversationMode } from "./hooks/useConversationMode";
 import "./App.css";
 
 export default function App() {
-  // UI modes
+  // View state
   const [mapOnly, setMapOnly] = useState(false);
 
   // Toggles
@@ -26,10 +26,9 @@ export default function App() {
         <button onClick={() => setMapOnly(!mapOnly)}>
           {mapOnly ? "Back to List" : "Map View"}
         </button>
+
         <button
-          onClick={() =>
-            document.body.classList.toggle("dark")
-          }
+          onClick={() => document.body.classList.toggle("dark")}
         >
           Toggle Dark Mode
         </button>
