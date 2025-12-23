@@ -1,5 +1,5 @@
 /* =========================================================
-   Base Reset + Variables
+   Base + Theme
    ========================================================= */
 
 :root {
@@ -10,9 +10,9 @@
   --border: rgba(0, 0, 0, 0.08);
   --accent: #0f766e;
 
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --r-lg: 18px;
+  --r-md: 14px;
+  --r-sm: 10px;
 }
 
 body.dark {
@@ -21,31 +21,23 @@ body.dark {
   --ink: #f9fafb;
   --ink-muted: #9ca3af;
   --border: rgba(255, 255, 255, 0.08);
-  --accent: #22c55e;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
 body {
   margin: 0;
-  padding: 0;
   background: var(--bg);
   color: var(--ink);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
-  line-height: 1.45;
 }
 
 /* =========================================================
-   Layout Shell
+   Layout
    ========================================================= */
-
-.pp-page {
-  min-height: 100vh;
-}
 
 .pp-shell {
   max-width: 1200px;
@@ -54,90 +46,15 @@ body {
 }
 
 /* =========================================================
-   Top Bar
-   ========================================================= */
-
-.pp-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 18px 24px;
-  background: var(--card);
-  border-bottom: 1px solid var(--border);
-}
-
-.pp-title {
-  font-family: "Playfair Display", serif;
-  font-size: 1.5rem;
-}
-
-.pp-subtitle {
-  font-size: 0.9rem;
-  color: var(--ink-muted);
-}
-
-.pp-controls {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* =========================================================
-   Buttons & Inputs
-   ========================================================= */
-
-.pp-btn {
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  padding: 8px 14px;
-  background: var(--card);
-  color: var(--ink);
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.pp-btn.outline {
-  background: transparent;
-}
-
-.pp-btn.ghost {
-  background: transparent;
-  border-color: transparent;
-  color: var(--ink-muted);
-}
-
-.pp-input {
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  padding: 6px 12px;
-  background: var(--card);
-  color: var(--ink);
-}
-
-.pp-input.small {
-  width: 140px;
-}
-
-/* =========================================================
    Group Card
    ========================================================= */
 
 .pp-group {
   background: var(--card);
-  border-radius: var(--radius-lg);
+  border-radius: var(--r-lg);
   padding: 24px;
-  margin-bottom: 26px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.04);
-}
-
-.pp-group-header {
-  margin-bottom: 18px;
-}
-
-.pp-group-titleline {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-bottom: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.04);
 }
 
 .pp-group-title {
@@ -147,11 +64,11 @@ body {
 
 .pp-chip {
   display: inline-block;
-  margin-top: 6px;
   padding: 4px 10px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   border-radius: 999px;
   border: 1px solid var(--border);
+  margin-top: 6px;
 }
 
 .pp-group-copy {
@@ -163,8 +80,8 @@ body {
 
 .pp-info {
   background: rgba(0, 0, 0, 0.03);
-  border-radius: var(--radius-md);
   padding: 14px;
+  border-radius: var(--r-md);
 }
 
 body.dark .pp-info {
@@ -179,47 +96,44 @@ body.dark .pp-info {
 }
 
 /* =========================================================
-   VIBE PREVIEW (THIS FIXES YOUR ISSUE)
+   🔥 VIBE IMAGES — FIXED FOR REAL
    ========================================================= */
 
-.pp-vibe-block {
-  margin-top: 18px;
-}
-
-.pp-vibe-title {
-  font-weight: 700;
-}
-
-.pp-vibe-subtitle {
-  font-size: 0.9rem;
-  color: var(--ink-muted);
-  margin-top: 2px;
-}
-
-.pp-vibe-grid {
-  margin-top: 10px;
+.pp-vibes {
+  margin-top: 14px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 10px;
+}
+
+.pp-vibe {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .pp-vibe-img {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-sm);
   border: 1px solid var(--border);
+  display: block;
+}
+
+.pp-vibe-label {
+  display: none; /* hide text fallback */
 }
 
 /* =========================================================
-   Property Cards
+   Property Rows
    ========================================================= */
 
 .pp-prop {
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 18px;
-  padding: 18px 0;
+  padding: 20px 0;
   border-top: 1px solid var(--border);
 }
 
@@ -231,7 +145,7 @@ body.dark .pp-info {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: var(--radius-md);
+  border-radius: var(--r-md);
 }
 
 .pp-prop-addr {
@@ -239,10 +153,10 @@ body.dark .pp-info {
 }
 
 .pp-prop-meta {
-  display: flex;
-  gap: 10px;
   font-size: 0.85rem;
   color: var(--ink-muted);
+  display: flex;
+  gap: 10px;
 }
 
 .pp-prop-actions {
@@ -252,7 +166,23 @@ body.dark .pp-info {
 }
 
 /* =========================================================
-   Voting Stars
+   Buttons
+   ========================================================= */
+
+.pp-btn {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  background: var(--card);
+  cursor: pointer;
+}
+
+.pp-btn.outline {
+  background: transparent;
+}
+
+/* =========================================================
+   Stars
    ========================================================= */
 
 .pp-stars {
@@ -275,40 +205,5 @@ body.dark .pp-info {
 
 .pp-star-clear {
   font-size: 0.9rem;
-  margin-left: 6px;
   opacity: 0.6;
-}
-
-/* =========================================================
-   Notes & Conversation
-   ========================================================= */
-
-.pp-textarea {
-  width: 100%;
-  min-height: 80px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border);
-  padding: 10px;
-  background: var(--card);
-  color: var(--ink);
-}
-
-.pp-thread {
-  margin-top: 16px;
-  border-top: 1px dashed var(--border);
-  padding-top: 14px;
-}
-
-.pp-msg {
-  margin-bottom: 10px;
-}
-
-.pp-msg-author {
-  font-weight: 600;
-  margin-right: 6px;
-}
-
-.pp-msg-ts {
-  font-size: 0.75rem;
-  color: var(--ink-muted);
 }
