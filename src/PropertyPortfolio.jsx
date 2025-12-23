@@ -1,280 +1,364 @@
-// src/PropertyPortfolio.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import "./App.css";
+
 import { portfolio } from "./data/Portfolio";
+import { useFamilyNotes } from "./hooks/useFamilyNotes";
+import { useConversationMode } from "./hooks/useConversationMode";
+import { useFavorites } from "./hooks/useFavorites";
+import { useViewer } from "./hooks/useViewer";
+import { useFamilyVoting, Stars } from "./hooks/useFamilyVoting";
 
-/**
- * Lux “Open in Maps” + “Open in Redfin”
- * - Maps: Google Maps search URL
- * - Redfin: Redfin search URL (reliable even if listing IDs change)
- * - Photo preview: Google Street View Static (optional key)
- */
+const money = (n) =>
+  n?.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-const formatMoney = (n) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(n);
-
-const rangeMoney = (min, max) => `${formatMoney(min)} – ${formatMoney(max)}`;
-
-const roses = (count) => "🌹".repeat(Math.max(0, count));
+const fmtRange = (min, max) => `${money(min)}–${money(max)}`;
 
 const fullAddress = (p) => `${p.address}, ${p.city}, ${p.state}`;
 
-const mapsUrl = (p) =>
-  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    fullAddress(p)
-  )}`;
+const mapsUrlFor = (p) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress(p))}`;
 
-const redfinUrl = (p) =>
-  `https://www.redfin.com/search?query=${encodeURIComponent(fullAddress(p))}`;
+// “Open in Redfin” safely: use Google search constrained to redfin.
+// This avoids wrong-house links and works even without Redfin IDs.
+const redfinUrlFor = (p) =>
+  `https://www.google.com/search?q=${encodeURIComponent(`${fullAddress(p)} site:redfin.com`)}`;
 
-/**
- * Street View preview (not scraping). Requires a Maps key, but can be restricted by referrer.
- * Set in .env: VITE_GOOGLE_MAPS_KEY=xxxx
- */
-const streetViewUrl = (p) => {
-  const key = import.meta.env.VITE_GOOGLE_MAPS_KEY;
-  if (!key) return "";
-  const size = "320x220";
-  const location = encodeURIComponent(fullAddress(p));
-  return `https://maps.googleapis.com/maps/api/streetview?size=${size}&location=${location}&fov=70&pitch=10&source=outdoor&key=${key}`;
-};
+const propertyThumb = (p) =>
+  `https://source.unsplash.com/640x480/?${encodeURIComponent(`${p.city} ${p.state} luxury home exterior`)}`;
 
-const StatCard = ({ icon, label, value, gradient }) => (
-  <div className="ppp-stat-card" style={{ background: gradient }}>
-    <div className="ppp-stat-label">
-      {icon && <span className="ppp-stat-icon">{icon}</span>}
-      <span>{label}</span>
+function RoseRow({ count }) {
+  return <span className="pp-roses" aria-label="rating">{Array.from({ length: count }).map((_, i) => <span key={i}>🌹</span>)}</span>;
+}
+
+function VibeRow({ vibes }) {
+  return (
+    <div className="pp-vibes">
+      {vibes.map((v) => (
+        <a key={v.id} className="pp-vibe" href={v.mapsUrl} target="_blank" rel="noreferrer">
+          <img className="pp-vibe-img" src={v.imageUrl} alt={v.label} loading="lazy" />
+          <div className="pp-vibe-label">{v.label}</div>
+        </a>
+      ))}
     </div>
-    <div className="ppp-stat-value">{value}</div>
-  </div>
-);
-
-const Pill = ({ children, onClick, href, target }) => {
-  if (href) {
-    return (
-      <a className="ppp-pill" href={href} target={target || "_blank"} rel="noreferrer">
-        {children}
-      </a>
-    );
-  }
-  return (
-    <button className="ppp-pill" type="button" onClick={onClick}>
-      {children}
-    </button>
-  );
-};
-
-function PropertyCard({ p, showJasonOnly }) {
-  if (showJasonOnly && !p.isJason) return null;
-
-  const img = streetViewUrl(p);
-
-  return (
-    <article className={`ppp-property-card ${p.isJason ? "is-jason" : ""}`}>
-      <div className="ppp-property-left">
-        {img ? (
-          <img className="ppp-property-img" src={img} alt={`Preview: ${fullAddress(p)}`} loading="lazy" />
-        ) : (
-          <div className="ppp-property-img ppp-img-fallback">
-            <div className="ppp-img-fallback-title">Preview</div>
-            <div className="ppp-img-fallback-sub">
-              Add <code>VITE_GOOGLE_MAPS_KEY</code> for Street View
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="ppp-property-right">
-        <div className="ppp-property-top">
-          <div className="ppp-property-address">
-            {fullAddress(p)}
-            {p.isJason && <span className="ppp-jason-badge" title="Jason’s desired properties">★ J</span>}
-          </div>
-
-          <div className="ppp-property-meta">
-            <span>{p.beds} bd</span>
-            <span>{p.baths} ba</span>
-            <span>{p.sqft.toLocaleString()} sqft</span>
-          </div>
-        </div>
-
-        <div className="ppp-property-grid">
-          <div className="ppp-metric">
-            <div className="ppp-metric-label">Price</div>
-            <div className="ppp-metric-value">{formatMoney(p.price)}</div>
-          </div>
-
-          <div className="ppp-metric">
-            <div className="ppp-metric-label">Monthly Income</div>
-            <div className="ppp-metric-value ppp-income-monthly">
-              {rangeMoney(p.monthlyIncome.min, p.monthlyIncome.max)}
-            </div>
-          </div>
-
-          <div className="ppp-metric">
-            <div className="ppp-metric-label">Annual Income</div>
-            <div className="ppp-metric-value ppp-income-annual">
-              {rangeMoney(p.annualIncome.min, p.annualIncome.max)}
-            </div>
-          </div>
-        </div>
-
-        <div className="ppp-roi">
-          <div className="ppp-roi-label">ROI notes</div>
-          <div className="ppp-roi-text">{p.roiNotes}</div>
-        </div>
-
-        <div className="ppp-actions">
-          <Pill href={mapsUrl(p)}>Open in Maps</Pill>
-          <Pill href={redfinUrl(p)}>Open in Redfin</Pill>
-        </div>
-      </div>
-    </article>
   );
 }
 
-function MarketCard({ market, showJasonOnly }) {
-  const [expanded, setExpanded] = useState(true);
+function GroupCard({ group, notesOn, convoOn, favorites, voting, viewerId }) {
+  const [openCapRate, setOpenCapRate] = useState(false);
 
   return (
-    <section className="ppp-market">
-      <header className="ppp-market-header">
-        <div className="ppp-market-header-left">
-          <div className="ppp-market-title">
-            <span className="ppp-market-pin">📍</span>
-            <span>{market.name}</span>
-            <span className="ppp-market-roses">{roses(market.roses)}</span>
+    <section className="pp-group" data-pdf-section={group.pdf?.section || ""}>
+      <header className="pp-group-header">
+        <div className="pp-group-titleline">
+          <div className="pp-group-title">
+            <span className="pp-pin">📍</span> {group.name}
           </div>
-          <div className="ppp-market-tag">{market.region}</div>
+          <RoseRow count={group.roses} />
         </div>
 
-        <div className="ppp-market-header-right">
-          <button
-            className="ppp-collapse"
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-          >
-            {expanded ? "Collapse" : "Expand"}
-          </button>
+        <div className="pp-group-sub">
+          <span className="pp-chip">{group.region}</span>
+          <a className="pp-link" href={`https://www.google.com/maps/@${group.map.lat},${group.map.lng},${group.map.zoom}z`} target="_blank" rel="noreferrer">
+            Open area in Maps
+          </a>
         </div>
+
+        <div className="pp-group-copy">
+          <div className="pp-info">
+            <div className="pp-info-label">Dating Scene</div>
+            <div className="pp-info-text">{group.datingScene}</div>
+          </div>
+          <div className="pp-info">
+            <div className="pp-info-label">Best For</div>
+            <div className="pp-info-text">{group.bestFor}</div>
+          </div>
+        </div>
+
+        <VibeRow vibes={group.vibes || []} />
       </header>
 
-      {/* Group map preview */}
-      {market.map?.staticUrl && (
-        <div className="ppp-market-map">
-          <img
-            src={market.map.staticUrl}
-            alt={`Map preview: ${market.name}`}
-            loading="lazy"
-          />
+      <div className="pp-group-controls">
+        <button className="pp-btn ghost" type="button" onClick={() => setOpenCapRate((v) => !v)}>
+          {openCapRate ? "Hide cap-rate math" : "Show cap-rate math"}
+        </button>
+        <div className="pp-group-controls-hint">
+          Links: house-specific Zillow is gone. We open Maps + a Redfin search for the exact address.
         </div>
-      )}
+      </div>
 
-      {expanded && (
-        <div className="ppp-market-body">
-          <div className="ppp-info-card ppp-dating">
-            <div className="ppp-info-label">
-              <span>♡</span>
-              <span>Dating / Vibe</span>
-            </div>
-            <p>{market.datingScene}</p>
-          </div>
+      <div className="pp-props">
+        {group.properties.map((p) => {
+          const sum = voting.summary(p.id);
+          const fav = favorites.isFavorite(p.id);
 
-          <div className="ppp-info-card">
-            <div className="ppp-info-label">Best For</div>
-            <p>{market.bestFor}</p>
-          </div>
+          return (
+            <article key={p.id} className={`pp-prop ${fav ? "is-fav" : ""}`}>
+              <div className="pp-prop-left">
+                <img className="pp-prop-img" src={propertyThumb(p)} alt={`${p.city} preview`} loading="lazy" />
+                <div className="pp-prop-badges">
+                  {p.isJason ? <span className="pp-badge">JASON’S</span> : null}
+                  {fav ? <span className="pp-badge subtle">★ Favorite</span> : null}
+                </div>
+              </div>
 
-          {/* IMPORTANT: we do NOT total numbers together anymore.
-              Each property stays independent (each house is for someone else). */}
-          <div className="ppp-properties">
-            {market.properties.map((p) => (
-              <PropertyCard key={p.id} p={p} showJasonOnly={showJasonOnly} />
-            ))}
-          </div>
-        </div>
-      )}
+              <div className="pp-prop-main">
+                <div className="pp-prop-top">
+                  <div>
+                    <div className="pp-prop-addr">{fullAddress(p)}</div>
+                    <div className="pp-prop-meta">
+                      <span>{p.beds} bd</span>
+                      <span>{p.baths} ba</span>
+                      <span>{p.sqft?.toLocaleString?.() ?? p.sqft} sqft</span>
+                    </div>
+                  </div>
+
+                  <div className="pp-prop-actions">
+                    <button className="pp-btn" type="button" onClick={() => favorites.toggleFavorite(p.id)}>
+                      {fav ? "Unfavorite" : "Favorite"}
+                    </button>
+
+                    <a className="pp-btn outline" href={mapsUrlFor(p)} target="_blank" rel="noreferrer">
+                      Open in Maps
+                    </a>
+                    <a className="pp-btn outline" href={redfinUrlFor(p)} target="_blank" rel="noreferrer">
+                      Open in Redfin
+                    </a>
+                  </div>
+                </div>
+
+                <div className="pp-prop-stats">
+                  <div className="pp-stat">
+                    <div className="pp-stat-label">Price</div>
+                    <div className="pp-stat-value">{money(p.price)}</div>
+                  </div>
+                  <div className="pp-stat">
+                    <div className="pp-stat-label">Monthly income</div>
+                    <div className="pp-stat-value">{fmtRange(p.monthlyIncome.min, p.monthlyIncome.max)}</div>
+                  </div>
+                  <div className="pp-stat">
+                    <div className="pp-stat-label">Annual income</div>
+                    <div className="pp-stat-value">{fmtRange(p.annualIncome.min, p.annualIncome.max)}</div>
+                  </div>
+                </div>
+
+                <div className="pp-roi">
+                  <div className="pp-roi-title">ROI notes</div>
+                  <div className="pp-roi-text">{p.roiNotes}</div>
+                </div>
+
+                {openCapRate ? (
+                  <div className="pp-cap">
+                    <div className="pp-cap-row">
+                      <div className="pp-cap-label">Estimated NOI (annual)</div>
+                      <div className="pp-cap-val">{money(p.capRate.estimatedNOI)}</div>
+                    </div>
+                    <div className="pp-cap-row">
+                      <div className="pp-cap-label">Estimated cap rate</div>
+                      <div className="pp-cap-val">{p.capRate.estimatedCapRate.toFixed(1)}%</div>
+                    </div>
+                    <div className="pp-cap-foot">
+                      (Hidden by default because family conversations tend to start with vibes + utility, then math.)
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="pp-vote">
+                  <div className="pp-vote-left">
+                    <div className="pp-vote-label">Family rating</div>
+                    <div className="pp-vote-sub">
+                      {sum.count ? `${sum.avg.toFixed(1)} avg (${sum.count} votes)` : "No votes yet"}
+                    </div>
+                  </div>
+
+                  <Stars
+                    value={sum.mine}
+                    title="Your rating"
+                    onChange={(n) => voting.rate(p.id, n)}
+                  />
+                </div>
+
+                {notesOn ? (
+                  <FamilyNotesBlock propertyId={p.id} viewerId={viewerId} privateNotes={p.privateNotes} />
+                ) : null}
+
+                {convoOn ? <ConversationBlock propertyId={p.id} viewerId={viewerId} /> : null}
+              </div>
+            </article>
+          );
+        })}
+      </div>
     </section>
   );
 }
 
-export default function PropertyPortfolio() {
-  const [query, setQuery] = useState("");
-  const [jasonOnly, setJasonOnly] = useState(false);
+function FamilyNotesBlock({ propertyId, viewerId, privateNotes }) {
+  const key = `pp.notes.${propertyId}.${viewerId}`;
+  const [text, setText] = useState(() => localStorage.getItem(key) || "");
 
-  const groups = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return portfolio.groups;
-
-    return portfolio.groups
-      .map((g) => {
-        const props = g.properties.filter((p) => {
-          const hay = `${p.address} ${p.city} ${p.state}`.toLowerCase();
-          return hay.includes(q);
-        });
-        return { ...g, properties: props };
-      })
-      .filter((g) => g.properties.length > 0);
-  }, [query]);
-
-  // Print action (storybook-style print CSS can be added later; this keeps it simple)
-  const onPrint = () => window.print();
-
-  // Nice: remember toggles
-  useEffect(() => {
-    const saved = localStorage.getItem("ppp_jason_only");
-    if (saved === "1") setJasonOnly(true);
-  }, []);
-  useEffect(() => {
-    localStorage.setItem("ppp_jason_only", jasonOnly ? "1" : "0");
-  }, [jasonOnly]);
+  const save = (v) => {
+    setText(v);
+    localStorage.setItem(key, v);
+  };
 
   return (
-    <div className="ppp-page">
-      <div className="ppp-shell">
-        <header className="ppp-header">
-          <div>
-            <h1 className="ppp-title">Family Property Portfolio</h1>
-            <p className="ppp-subtitle">Luxury-focused, conversation-friendly, and link-correct ✅</p>
-          </div>
+    <div className="pp-notes">
+      <div className="pp-notes-title">Family notes (private to you)</div>
+      <textarea
+        className="pp-textarea"
+        value={text}
+        onChange={(e) => save(e.target.value)}
+        placeholder="Thoughts, concerns, pros/cons, questions for the group…"
+      />
 
-          <div className="ppp-header-actions">
-            <button className="ppp-download-btn" type="button" onClick={onPrint}>
-              <span className="ppp-download-icon">⬇️</span>
-              Download PDF
-            </button>
-          </div>
-        </header>
+      {privateNotes?.notes?.length ? (
+        <div className="pp-notes-seed">
+          <div className="pp-notes-seed-title">Seed notes (from dataset)</div>
+          <ul>
+            {privateNotes.notes.map((n, i) => <li key={i}>{n}</li>)}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
-        <div className="ppp-toolbar">
-          <div className="ppp-search">
-            <input
-              className="ppp-search-input"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by address, city, state…"
-              aria-label="Search properties"
-            />
-          </div>
+function ConversationBlock({ propertyId, viewerId }) {
+  const key = `pp.thread.${propertyId}`;
+  const [items, setItems] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(key) || "[]");
+    } catch {
+      return [];
+    }
+  });
 
-          <label className="ppp-toggle">
-            <input
-              type="checkbox"
-              checked={jasonOnly}
-              onChange={(e) => setJasonOnly(e.target.checked)}
-            />
-            <span>Jason’s picks only (★ J)</span>
-          </label>
+  const [draft, setDraft] = useState("");
+
+  const post = () => {
+    const msg = draft.trim();
+    if (!msg) return;
+    const next = [
+      ...items,
+      { id: `${Date.now()}`, author: viewerId, text: msg, ts: new Date().toISOString() },
+    ];
+    setItems(next);
+    localStorage.setItem(key, JSON.stringify(next));
+    setDraft("");
+  };
+
+  return (
+    <div className="pp-thread">
+      <div className="pp-thread-title">Conversation mode</div>
+
+      <div className="pp-thread-prompts">
+        <span className="pp-prompt">What would we use this for most?</span>
+        <span className="pp-prompt">Any dealbreakers?</span>
+        <span className="pp-prompt">Is this “legacy” or “yield”?</span>
+      </div>
+
+      <div className="pp-thread-list">
+        {items.length ? items.map((m) => (
+          <div key={m.id} className="pp-msg">
+            <div className="pp-msg-meta">
+              <span className="pp-msg-author">{m.author}</span>
+              <span className="pp-msg-ts">{new Date(m.ts).toLocaleString()}</span>
+            </div>
+            <div className="pp-msg-text">{m.text}</div>
+          </div>
+        )) : (
+          <div className="pp-thread-empty">No messages yet. Start the story ✍️</div>
+        )}
+      </div>
+
+      <div className="pp-thread-compose">
+        <input
+          className="pp-input"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Add a thought…"
+        />
+        <button className="pp-btn" type="button" onClick={post}>Post</button>
+      </div>
+    </div>
+  );
+}
+
+export default function PropertyPortfolio() {
+  const [dark, setDark] = useState(false);
+
+  const { name, setName, id: viewerId } = useViewer();
+  const { enabled: notesOn, toggle: toggleNotes } = useFamilyNotes();
+  const { enabled: convoOn, toggle: toggleConvo } = useConversationMode();
+  const favorites = useFavorites();
+  const voting = useFamilyVoting(viewerId);
+
+  const groups = useMemo(() => portfolio.groups || [], []);
+
+  // Apply dark mode class
+  React.useEffect(() => {
+    document.body.classList.toggle("dark", dark);
+  }, [dark]);
+
+  return (
+    <div className="pp-page">
+      <div className="pp-topbar">
+        <div className="pp-brand">
+          <div className="pp-title">Property Portfolio</div>
+          <div className="pp-subtitle">A family space for vibes, math, and decisions.</div>
         </div>
 
-        <div className="ppp-market-list">
-          {groups.map((m) => (
-            <MarketCard key={m.id} market={m} showJasonOnly={jasonOnly} />
+        <div className="pp-controls">
+          <div className="pp-viewer">
+            <span className="pp-viewer-label">Viewer</span>
+            <input
+              className="pp-input small"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+            />
+          </div>
+
+          <button className="pp-btn outline" type="button" onClick={() => setDark((v) => !v)}>
+            {dark ? "Light" : "Dark"}
+          </button>
+
+          <button className="pp-btn outline" type="button" onClick={toggleNotes}>
+            {notesOn ? "Hide Notes" : "Show Notes"}
+          </button>
+
+          <button className="pp-btn outline" type="button" onClick={toggleConvo}>
+            {convoOn ? "Exit Conversation" : "Conversation Mode"}
+          </button>
+
+          <button className="pp-btn" type="button" onClick={() => window.print()}>
+            Print Storybook PDF
+          </button>
+        </div>
+      </div>
+
+      <div className="pp-shell">
+        <div className="pp-kicker">
+          <div className="pp-kicker-left">
+            <div className="pp-kicker-big">{portfolio.generatedFor}</div>
+            <div className="pp-kicker-small">
+              Favorites saved: <b>{favorites.favoritesCount}</b>
+              <span className="pp-dot">•</span>
+              Links: <b>Maps</b> + <b>Redfin search</b>
+            </div>
+          </div>
+        </div>
+
+        <div className="pp-groups">
+          {groups.map((g) => (
+            <GroupCard
+              key={g.id}
+              group={g}
+              notesOn={notesOn}
+              convoOn={convoOn}
+              favorites={favorites}
+              voting={voting}
+              viewerId={viewerId}
+            />
           ))}
         </div>
       </div>

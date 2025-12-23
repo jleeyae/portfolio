@@ -1,11 +1,15 @@
-export function useFamilyNotes() {
-  const key = "family-notes-enabled";
-  const enabled = localStorage.getItem(key) === "true";
+import { useEffect, useState } from "react";
 
-  const toggle = () => {
-    localStorage.setItem(key, (!enabled).toString());
-    window.location.reload();
-  };
+const KEY = "pp.familyNotesOn";
+
+export function useFamilyNotes() {
+  const [enabled, setEnabled] = useState<boolean>(() => localStorage.getItem(KEY) === "1");
+
+  useEffect(() => {
+    localStorage.setItem(KEY, enabled ? "1" : "0");
+  }, [enabled]);
+
+  const toggle = () => setEnabled((v) => !v);
 
   return { enabled, toggle };
 }

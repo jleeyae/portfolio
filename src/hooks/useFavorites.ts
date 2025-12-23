@@ -1,15 +1,34 @@
+import { useEffect, useMemo, useState } from "react";
+
+const KEY = "pp.favorites";
+
 export function useFavorites() {
-  const key = "favorite-properties";
-  const stored = JSON.parse(localStorage.getItem(key) || "[]");
+  const [set, setSet] = useState<Set<string>>(() => {
+    try {
+      const raw = localStorage.getItem(KEY);
+      const arr: string[] = raw ? JSON.parse(raw) : [];
+      return new Set(arr);
+    } catch {
+      return new Set();
+    }
+  });
 
-  const toggle = (id: string) => {
-    const next = stored.includes(id)
-      ? stored.filter((x: string) => x !== id)
-      : [...stored, id];
+  useEffect(() => {
+    localStorage.setItem(KEY, JSON.stringify(Array.from(set)));
+  }, [set]);
 
-    localStorage.setItem(key, JSON.stringify(next));
-    window.location.reload();
+  const toggleFavorite = (propertyId: string) => {
+    setSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(propertyId)) next.delete(propertyId);
+      else next.add(propertyId);
+      return next;
+    });
   };
 
-  return { favorites: stored, toggle };
+  const isFavorite = (propertyId: string) => set.has(propertyId);
+
+  const count = useMemo(() => set.size, [set]);
+
+  return { isFavorite, toggleFavorite, favoritesCount: count };
 }
